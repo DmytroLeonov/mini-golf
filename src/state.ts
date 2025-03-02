@@ -1,8 +1,10 @@
 import { GameConfig } from "./game-config";
 import { Level } from "./level";
+import { Coord } from "./types";
 import { RandFuncs } from "./utils";
 
 export type State = {
+  ball: Coord;
   config: GameConfig;
   level: Level;
   canvas: HTMLCanvasElement;
@@ -18,6 +20,7 @@ export function createGameState(
   rand: RandFuncs
 ): State {
   return {
+    ball: level.tee,
     config,
     level,
     canvas,

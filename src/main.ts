@@ -33,6 +33,47 @@ function setText(state: State): void {
   heightSpan.innerText = h + "";
 }
 
+function renderBall(state: State): void {
+  const {
+    ball,
+    config: { tileSize },
+    ctx,
+  } = state;
+
+  ctx.beginPath();
+  ctx.arc(
+    ball.x * tileSize + tileSize / 2,
+    ball.y * tileSize + tileSize / 2,
+    tileSize * 0.3,
+    0,
+    2 * Math.PI
+  );
+  ctx.fillStyle = "white";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "black";
+  ctx.stroke();
+}
+
+function renderHole(state: State): void {
+  const {
+    level: { hole },
+    config: { tileSize },
+    ctx,
+  } = state;
+
+  ctx.beginPath();
+  ctx.arc(
+    hole.x * tileSize + tileSize / 2,
+    hole.y * tileSize + tileSize / 2,
+    tileSize * 0.4,
+    0,
+    2 * Math.PI
+  );
+  ctx.fillStyle = "black";
+  ctx.fill();
+}
+
 function render(state: State): void {
   const { level } = state;
 
@@ -41,6 +82,9 @@ function render(state: State): void {
       tile.render(state);
     }
   }
+
+  renderBall(state);
+  renderHole(state);
 }
 
 function main(): void {
