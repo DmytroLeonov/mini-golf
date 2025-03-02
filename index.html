@@ -7,8 +7,17 @@
     <link href="/src/styles.css" rel="stylesheet" />
     <title>Mini Golf</title>
   </head>
-  <body>
-    <div id="app"></div>
+  <body class="bg-black text-white">
+    <div class="h-screen grid place-items-center">
+      <section>
+        <canvas id="canvas"></canvas>
+        <div>
+          <p>Seed: <span id="seed">0</span></p>
+          <p>Width: <span id="width">0</span></p>
+          <p>Height: <span id="height">0</span></p>
+        </div>
+      </section>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

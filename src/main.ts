@@ -1,0 +1,62 @@
+import { getGameConfig } from "./game-config";
+import { createRandomLevel } from "./level";
+import { createGameState, State } from "./state";
+import { createRand, getSeed, mulberry32 } from "./utils";
+
+function setupCanvas(state: State): void {
+  const { ctx } = state;
+  ctx.imageSmoothingEnabled = false;
+}
+
+function resetCanvas(state: State): void {
+  const {
+    canvas,
+    config: { tileSize },
+    level,
+  } = state;
+
+  canvas.width = level.w * tileSize;
+  canvas.height = level.h * tileSize;
+}
+
+const seedSpan = document.querySelector<HTMLSpanElement>("#seed")!;
+const widthSpan = document.querySelector<HTMLSpanElement>("#width")!;
+const heightSpan = document.querySelector<HTMLSpanElement>("#height")!;
+
+function setText(state: State): void {
+  const {
+    config: { seed },
+    level: { h, w },
+  } = state;
+  seedSpan.innerText = seed + "";
+  widthSpan.innerText = w + "";
+  heightSpan.innerText = h + "";
+}
+
+function render(state: State): void {
+  const { level } = state;
+
+  for (const row of level.field) {
+    for (const tile of row) {
+      tile.render(state);
+    }
+  }
+}
+
+function main(): void {
+  const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
+  const seed = getSeed(0);
+  const rand = mulberry32(seed);
+  const randFuncs = createRand(rand);
+  const ctx = canvas.getContext("2d")!;
+  const level = createRandomLevel(randFuncs);
+  const config = getGameConfig(seed);
+  const state = createGameState(config, canvas, ctx, level, randFuncs);
+
+  setupCanvas(state);
+  resetCanvas(state);
+  setText(state);
+  render(state);
+}
+
+main();
