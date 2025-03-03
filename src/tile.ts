@@ -4,6 +4,8 @@ import { Coord } from "./types";
 export const tileTypes = ["fairway", "sand", "rough", "water", "tree"] as const;
 export type TileType = (typeof tileTypes)[number];
 
+export type Slope = [number, number];
+
 export interface Renderable {
   render(state: State): void;
 }
@@ -15,10 +17,12 @@ export interface ITile extends Renderable {
 abstract class BaseTile {
   readonly type: TileType;
   readonly pos: Coord;
+  readonly slope: Slope | null;
 
-  constructor(type: TileType, pos: Coord) {
+  constructor(type: TileType, pos: Coord, slope: Slope | null) {
     this.type = type;
     this.pos = pos;
+    this.slope = slope;
   }
 }
 
@@ -26,8 +30,14 @@ abstract class SolidTile extends BaseTile implements Renderable {
   protected bg: string;
   protected fg: string;
 
-  constructor(type: TileType, pos: Coord, bg: string, fg: string) {
-    super(type, pos);
+  constructor(
+    type: TileType,
+    pos: Coord,
+    slope: Slope | null,
+    bg: string,
+    fg: string
+  ) {
+    super(type, pos, slope);
     this.bg = bg;
     this.fg = fg;
   }
@@ -37,26 +47,48 @@ abstract class SolidTile extends BaseTile implements Renderable {
       ctx,
       config: { tileSize },
     } = state;
+    const posXOnCanvas = this.pos.x * tileSize;
+    const posYOnCanvas = this.pos.y * tileSize;
     const radiuses = this.getTileRadiuses(state);
     ctx.beginPath();
-    ctx.roundRect(
-      this.pos.x * tileSize,
-      this.pos.y * tileSize,
-      tileSize,
-      tileSize,
-      radiuses
-    );
+    ctx.roundRect(posXOnCanvas, posYOnCanvas, tileSize, tileSize, radiuses);
     ctx.fillStyle = this.bg;
     ctx.fill();
 
+    if (!this.slope) {
+      ctx.beginPath();
+      ctx.arc(
+        posXOnCanvas + tileSize / 2,
+        posYOnCanvas + tileSize / 2,
+        tileSize * 0.1,
+        0,
+        2 * Math.PI
+      );
+      ctx.fillStyle = this.fg;
+      ctx.fill();
+      return;
+    }
+
     ctx.beginPath();
-    ctx.arc(
-      this.pos.x * tileSize + tileSize / 2,
-      this.pos.y * tileSize + tileSize / 2,
-      tileSize * 0.1,
-      0,
-      2 * Math.PI
+    const [dy, dx] = this.slope;
+    const xCenter = posXOnCanvas + tileSize / 2 - dx * 3;
+    const yCenter = posYOnCanvas + tileSize / 2 - dy * 3;
+    const angle = Math.atan2(dy, dx);
+    const size = tileSize * 0.25;
+
+    ctx.moveTo(
+      xCenter + Math.cos(angle) * size,
+      yCenter + Math.sin(angle) * size
     );
+    ctx.lineTo(
+      xCenter + Math.cos(angle + (2 * Math.PI) / 3.5) * size,
+      yCenter + Math.sin(angle + (2 * Math.PI) / 3.5) * size
+    );
+    ctx.lineTo(
+      xCenter + Math.cos(angle - (2 * Math.PI) / 3.5) * size,
+      yCenter + Math.sin(angle - (2 * Math.PI) / 3.5) * size
+    );
+    ctx.closePath();
     ctx.fillStyle = this.fg;
     ctx.fill();
   }
@@ -92,32 +124,32 @@ abstract class SolidTile extends BaseTile implements Renderable {
 }
 
 export class WaterTile extends SolidTile implements ITile {
-  constructor(readonly pos: Coord) {
-    super("water", pos, "lightblue", "blue");
+  constructor(pos: Coord) {
+    super("water", pos, null, "lightblue", "blue");
   }
 }
 
 export class SandTile extends SolidTile implements ITile {
-  constructor(readonly pos: Coord) {
-    super("sand", pos, "yellow", "orange");
+  constructor(pos: Coord, slope: Slope | null) {
+    super("sand", pos, slope, "yellow", "orange");
   }
 }
 
 export class FairwayTile extends SolidTile implements ITile {
-  constructor(readonly pos: Coord) {
-    super("fairway", pos, "lime", "gray");
+  constructor(pos: Coord, slope: Slope | null) {
+    super("fairway", pos, slope, "lime", "gray");
   }
 }
 
 export class RoughTile extends SolidTile implements ITile {
-  constructor(readonly pos: Coord) {
-    super("rough", pos, "white", "lime");
+  constructor(pos: Coord, slope: Slope | null) {
+    super("rough", pos, slope, "white", "lime");
   }
 }
 
 export class TreeTile extends SolidTile implements ITile {
-  constructor(readonly pos: Coord) {
-    super("tree", pos, "green", "green");
+  constructor(pos: Coord) {
+    super("tree", pos, null, "green", "green");
   }
 }
 
