@@ -50,7 +50,7 @@ function renderBall(state: State): void {
   );
   ctx.fillStyle = "white";
   ctx.fill();
-  ctx.lineWidth = 3;
+  ctx.lineWidth = tileSize * 0.1;
   ctx.strokeStyle = "black";
   ctx.stroke();
 }

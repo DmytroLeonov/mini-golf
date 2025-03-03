@@ -2,38 +2,41 @@ import { State } from "./state";
 import { Coord } from "./types";
 
 export const tileTypes = ["fairway", "sand", "rough", "water", "tree"] as const;
-
 export type TileType = (typeof tileTypes)[number];
 
-export type Color = {
-  dot: string;
-  bg: string;
-};
-
-export type TileColor = Record<TileType, Color>;
-
-const tileColorMap: TileColor = {
-  fairway: { bg: "lime", dot: "gray" },
-  rough: { bg: "white", dot: "lime" },
-  sand: { bg: "yellow", dot: "orange" },
-  tree: { bg: "green", dot: "green" },
-  water: { bg: "lightblue", dot: "blue" },
-};
-
-export interface ITile {
+export interface Renderable {
   render(state: State): void;
 }
 
-export class Tile implements ITile {
-  constructor(readonly type: TileType, readonly pos: Coord) {}
+export interface ITile extends Renderable {
+  // canLand(): boolean;
+}
+
+abstract class BaseTile {
+  readonly type: TileType;
+  readonly pos: Coord;
+
+  constructor(type: TileType, pos: Coord) {
+    this.type = type;
+    this.pos = pos;
+  }
+}
+
+abstract class SolidTile extends BaseTile implements Renderable {
+  protected bg: string;
+  protected fg: string;
+
+  constructor(type: TileType, pos: Coord, bg: string, fg: string) {
+    super(type, pos);
+    this.bg = bg;
+    this.fg = fg;
+  }
 
   render(state: State): void {
     const {
       ctx,
       config: { tileSize },
     } = state;
-    const color = tileColorMap[this.type];
-
     const radiuses = this.getTileRadiuses(state);
     ctx.beginPath();
     ctx.roundRect(
@@ -43,7 +46,7 @@ export class Tile implements ITile {
       tileSize,
       radiuses
     );
-    ctx.fillStyle = color.bg;
+    ctx.fillStyle = this.bg;
     ctx.fill();
 
     ctx.beginPath();
@@ -54,7 +57,7 @@ export class Tile implements ITile {
       0,
       2 * Math.PI
     );
-    ctx.fillStyle = color.dot;
+    ctx.fillStyle = this.fg;
     ctx.fill();
   }
 
@@ -87,3 +90,42 @@ export class Tile implements ITile {
     return radiuses;
   }
 }
+
+export class WaterTile extends SolidTile implements ITile {
+  constructor(readonly pos: Coord) {
+    super("water", pos, "lightblue", "blue");
+  }
+}
+
+export class SandTile extends SolidTile implements ITile {
+  constructor(readonly pos: Coord) {
+    super("sand", pos, "yellow", "orange");
+  }
+}
+
+export class FairwayTile extends SolidTile implements ITile {
+  constructor(readonly pos: Coord) {
+    super("fairway", pos, "lime", "gray");
+  }
+}
+
+export class RoughTile extends SolidTile implements ITile {
+  constructor(readonly pos: Coord) {
+    super("rough", pos, "white", "lime");
+  }
+}
+
+export class TreeTile extends SolidTile implements ITile {
+  constructor(readonly pos: Coord) {
+    super("tree", pos, "green", "green");
+  }
+}
+
+export const tileClasses = [
+  WaterTile,
+  SandTile,
+  FairwayTile,
+  RoughTile,
+  TreeTile,
+] as const;
+export type TileClass = InstanceType<(typeof tileClasses)[number]>;

@@ -5,7 +5,7 @@ export type GameConfig = {
 
 export function getGameConfig(seed: number): GameConfig {
   return {
-    tileSize: 25,
+    tileSize: 50,
     seed,
   };
 }

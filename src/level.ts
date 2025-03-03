@@ -1,8 +1,8 @@
-import { Tile, tileTypes } from "./tile";
+import { TileClass, tileClasses, tileTypes } from "./tile";
 import { Coord } from "./types";
 import { RandFuncs } from "./utils";
 
-export type Field = Tile[][];
+export type Field = TileClass[][];
 
 export type Level = {
   tee: Coord;
@@ -19,12 +19,12 @@ function createRandomField(rand: RandFuncs): Field {
   const field: Field = [];
 
   for (let y = 0; y < w; y++) {
-    const row: Tile[] = [];
+    const row: TileClass[] = [];
     for (let x = 0; x < h; x++) {
       const randomTileIdx = rand.randRange(0, tileTypes.length);
-      const tileType = tileTypes[randomTileIdx];
+      const TileClass = tileClasses[randomTileIdx];
 
-      row.push(new Tile(tileType, { x, y }));
+      row.push(new TileClass({ x, y }));
     }
 
     field.push(row);
