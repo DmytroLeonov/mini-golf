@@ -75,7 +75,10 @@ function renderHole(state: State): void {
 }
 
 function render(state: State): void {
-  const { level } = state;
+  const { level, canvas, ctx } = state;
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (const row of level.field) {
     for (const tile of row) {

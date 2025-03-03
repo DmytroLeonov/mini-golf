@@ -34,16 +34,19 @@ export class Tile implements ITile {
     } = state;
     const color = tileColorMap[this.type];
 
-    ctx.fillStyle = color.bg;
-    ctx.fillRect(
+    const radiuses = this.getTileRadiuses(state);
+    ctx.beginPath();
+    ctx.roundRect(
       this.pos.x * tileSize,
       this.pos.y * tileSize,
       tileSize,
-      tileSize
+      tileSize,
+      radiuses
     );
+    ctx.fillStyle = color.bg;
+    ctx.fill();
 
-    ctx.beginPath()
-    ctx.moveTo(this.pos.x, this.pos.y)
+    ctx.beginPath();
     ctx.arc(
       this.pos.x * tileSize + tileSize / 2,
       this.pos.y * tileSize + tileSize / 2,
@@ -53,5 +56,39 @@ export class Tile implements ITile {
     );
     ctx.fillStyle = color.dot;
     ctx.fill();
+  }
+
+  private getTileRadiuses(state: State): number[] {
+    const {
+      level: { field },
+      config: { tileSize },
+    } = state;
+
+    const neighboursToCheck = [
+      [0, -1],
+      [-1, 0],
+      [0, 1],
+      [1, 0],
+      [0, -1],
+    ];
+
+    const radiuses = [];
+    for (let i = 1; i < neighboursToCheck.length; i++) {
+      const n1Pos = neighboursToCheck[i - 1];
+      const n2Pos = neighboursToCheck[i];
+      const n1Tile = field[this.pos.y + n1Pos[0]]?.[this.pos.x + n1Pos[1]];
+      const n2Tile = field[this.pos.y + n2Pos[0]]?.[this.pos.x + n2Pos[1]];
+
+      if (
+        (n1Tile?.type === n2Tile?.type && n1Tile?.type === this.type) ||
+        [n1Tile?.type, n2Tile?.type].includes(this.type)
+      ) {
+        radiuses.push(0);
+      } else {
+        radiuses.push(tileSize * 0.5);
+      }
+    }
+
+    return radiuses;
   }
 }
