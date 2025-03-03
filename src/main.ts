@@ -1,3 +1,4 @@
+import { assert } from "./assert";
 import { getGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
 import { createGameState, State } from "./state";
@@ -20,8 +21,11 @@ function resetCanvas(state: State): void {
 }
 
 const seedSpan = document.querySelector<HTMLSpanElement>("#seed")!;
+assert(!!seedSpan, "seed span not found");
 const widthSpan = document.querySelector<HTMLSpanElement>("#width")!;
+assert(!!widthSpan, "seed span not found");
 const heightSpan = document.querySelector<HTMLSpanElement>("#height")!;
+assert(!!heightSpan, "seed span not found");
 
 function setText(state: State): void {
   const {
@@ -92,10 +96,12 @@ function render(state: State): void {
 
 function main(): void {
   const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
+  assert(!!canvas, "canvas not found");
   const seed = getSeed(0);
   const rand = mulberry32(seed);
   const randFuncs = createRand(rand);
   const ctx = canvas.getContext("2d")!;
+  assert(!!ctx, "could not get context2d");
   const level = createRandomLevel(randFuncs);
   const config = getGameConfig(seed);
   const state = createGameState(config, canvas, ctx, level, randFuncs);
