@@ -37,7 +37,7 @@ function main(): void {
   setupCanvas(state);
   resetCanvas(state);
   setText(state);
-  registerEvent(state, canvasClick);
+  registerEvent(state, canvasClick, ["hitting", "rolling"]);
   render(state);
 }
 
