@@ -1,5 +1,11 @@
 import { assert } from "./assert";
-import { canvasClick, registerEvent } from "./events";
+import {
+  canvasClick,
+  mouseEnter,
+  mouseLeave,
+  mouseMove,
+  registerMouseEvent,
+} from "./events";
 import { getGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
 import { render, setText } from "./render";
@@ -37,7 +43,10 @@ function main(): void {
   setupCanvas(state);
   resetCanvas(state);
   setText(state);
-  registerEvent(state, canvasClick, ["hitting", "rolling"]);
+  registerMouseEvent(state, "mouseenter", mouseEnter);
+  registerMouseEvent(state, "mousemove", mouseMove);
+  registerMouseEvent(state, "click", canvasClick, ["hitting", "rolling"]);
+  registerMouseEvent(state, "mouseleave", mouseLeave);
   render(state);
 }
 
