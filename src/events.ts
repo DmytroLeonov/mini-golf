@@ -47,6 +47,7 @@ function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Coord {
 
 export function canvasClick(state: State, pos: Coord): void {
   console.log(state, pos);
+  state.current = "rolling";
 }
 
 export function mouseEnter(state: State): void {
@@ -62,6 +63,48 @@ export function mouseLeave(state: State): void {
   state.ctx.canvas.style.cursor = "default";
 }
 
+const directions = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, 1],
+  [1, 1],
+  [1, 0],
+  [1, -1],
+  [0, -1],
+];
+
+export function updatePossibleMoves(state: State): void {
+  const {
+    ball,
+    roll,
+    level: { field, w, h },
+  } = state;
+
+  const possibleMoves: Coord[] = [];
+
+  outer: for (const [x, y] of directions) {
+    const endPos: Coord = {
+      x: ball.x + x * roll,
+      y: ball.y + y * roll,
+    };
+
+    if (endPos.x < 0 || endPos.x >= w || endPos.y < 0 || endPos.y >= h) {
+      continue;
+    }
+
+    for (let i = 1; i <= roll; i++) {
+      const tile = field[ball.y + y * i][ball.x + x * i];
+      if (!tile.canHitOver(state)) {
+        continue outer;
+      }
+    }
+    possibleMoves.push(endPos);
+  }
+
+  state.possibleMoves = possibleMoves;
+}
+
 export function registerRollEvent(state: State): void {
   const rerollButton = document.querySelector<HTMLSpanElement>("#reroll")!;
   assert(!!rerollButton, "rerollButton not found");
@@ -71,7 +114,8 @@ export function registerRollEvent(state: State): void {
       return;
     }
 
-    // TODO: change state to hitting
     state.roll = state.rand.randRange(1, 7);
+    state.current = "hitting";
+    updatePossibleMoves(state);
   });
 }

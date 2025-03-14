@@ -7,6 +7,7 @@ export type Current = "hitting" | "rolling";
 
 export type State = {
   current: Current;
+  possibleMoves: Coord[];
   ball: Coord;
   roll: number;
   hoveredTile: Coord | null;
@@ -24,6 +25,7 @@ export function createGameState(
 ): State {
   return {
     current: "rolling",
+    possibleMoves: [],
     ball: level.tee,
     roll: 0,
     hoveredTile: null,

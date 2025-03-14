@@ -150,30 +150,9 @@ function renderPossibleMove(state: State, pos: Coord): void {
   });
 }
 
-const offsets = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, 1],
-  [1, 1],
-  [1, 0],
-  [1, -1],
-  [0, -1],
-];
-
 function renderPossibleMoves(state: State): void {
-  const { ball, roll } = state;
-
-  if (!roll) {
-    return;
-  }
-
-  for (const [x, y] of offsets) {
-    const pos: Coord = {
-      x: ball.x + x * roll,
-      y: ball.y + y * roll,
-    };
-    renderPossibleMove(state, pos);
+  for (const possibleMove of state.possibleMoves) {
+    renderPossibleMove(state, possibleMove);
   }
 }
 
