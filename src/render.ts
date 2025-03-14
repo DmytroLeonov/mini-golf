@@ -3,7 +3,7 @@ import { State } from "./state";
 import { Coord } from "./types";
 
 type CircleProportionalConfig = {
-  color: string;
+  color?: string;
   radiusRatio: number;
   strokeRatio?: number;
   strokeColor?: string;
@@ -72,12 +72,15 @@ function renderCircle(
   ctx.arc(
     pos.x * tileSize + tileSize / 2,
     pos.y * tileSize + tileSize / 2,
-    tileSize * radiusRatio,
+    tileSize * (radiusRatio - (strokeRatio ?? 0) / 2),
     0,
     2 * Math.PI
   );
-  ctx.fillStyle = color;
-  ctx.fill();
+
+  if (color) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
 
   if (strokeRatio && strokeColor) {
     ctx.lineWidth = tileSize * strokeRatio;
@@ -120,7 +123,11 @@ function renderHoveredTile(state: State): void {
     return;
   }
 
-  renderCircle(state, hoveredTile, { color: "blue", radiusRatio: 0.25 });
+  renderCircle(state, hoveredTile, {
+    radiusRatio: 0.5,
+    strokeColor: "rgba(255, 0, 0, .5)",
+    strokeRatio: 0.1,
+  });
 }
 
 export function render(state: State): void {
