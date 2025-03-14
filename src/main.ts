@@ -5,6 +5,7 @@ import {
   mouseLeave,
   mouseMove,
   registerMouseEvent,
+  registerRollEvent,
 } from "./events";
 import { getGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
@@ -72,6 +73,7 @@ function main(): void {
   registerMouseEvent(state, "mousemove", mouseMove);
   registerMouseEvent(state, "click", canvasClick, ["hitting", "rolling"]);
   registerMouseEvent(state, "mouseleave", mouseLeave);
+  registerRollEvent(state);
 
   gameLoop(state);
 }

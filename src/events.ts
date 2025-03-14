@@ -1,3 +1,4 @@
+import { assert } from "./assert";
 import { Current, State } from "./state";
 import { Coord } from "./types";
 
@@ -54,10 +55,23 @@ export function mouseEnter(state: State): void {
 
 export function mouseMove(state: State, pos: Coord): void {
   state.hoveredTile = pos;
-  // console.log(pos);
 }
 
 export function mouseLeave(state: State): void {
   state.hoveredTile = null;
   state.ctx.canvas.style.cursor = "default";
+}
+
+export function registerRollEvent(state: State): void {
+  const rerollButton = document.querySelector<HTMLSpanElement>("#reroll")!;
+  assert(!!rerollButton, "rerollButton not found");
+
+  rerollButton.addEventListener("click", () => {
+    if (state.current !== "rolling") {
+      return;
+    }
+
+    // TODO: change state to hitting
+    state.roll = state.rand.randRange(1, 7);
+  });
 }

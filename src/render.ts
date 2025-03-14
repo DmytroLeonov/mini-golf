@@ -15,15 +15,19 @@ const widthSpan = document.querySelector<HTMLSpanElement>("#width")!;
 assert(!!widthSpan, "width span not found");
 const heightSpan = document.querySelector<HTMLSpanElement>("#height")!;
 assert(!!heightSpan, "height span not found");
+const rollSpan = document.querySelector<HTMLSpanElement>("#roll")!;
+assert(!!rollSpan, "roll span not found");
 
 export function setText(state: State): void {
   const {
     config: { seed },
     level: { h, w },
+    roll,
   } = state;
   seedSpan.innerText = seed + "";
   widthSpan.innerText = w + "";
   heightSpan.innerText = h + "";
+  rollSpan.innerText = roll + "";
 }
 
 export type TriangleVertex = {
@@ -138,8 +142,12 @@ function renderCircle(
   }
 }
 
-function renderDot(state: State, pos: Coord): void {
-  renderCircle(state, pos, { color: "red", radiusRatio: 0.1 });
+function renderPossibleMove(state: State, pos: Coord): void {
+  renderCircle(state, pos, {
+    radiusRatio: 0.5,
+    strokeColor: "rgba(0, 0, 255, .5)",
+    strokeRatio: 0.1,
+  });
 }
 
 const offsets = [
@@ -154,14 +162,18 @@ const offsets = [
 ];
 
 function renderPossibleMoves(state: State): void {
-  const ballPos = state.ball;
+  const { ball, roll } = state;
+
+  if (!roll) {
+    return;
+  }
 
   for (const [x, y] of offsets) {
-    const dotPos: Coord = {
-      x: ballPos.x + x,
-      y: ballPos.y + y,
+    const pos: Coord = {
+      x: ball.x + x * roll,
+      y: ball.y + y * roll,
     };
-    renderDot(state, dotPos);
+    renderPossibleMove(state, pos);
   }
 }
 
@@ -181,6 +193,8 @@ function renderHoveredTile(state: State): void {
 
 export function render(state: State): void {
   const { ctx } = state;
+
+  setText(state);
 
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
