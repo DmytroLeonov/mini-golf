@@ -12,7 +12,8 @@ export interface Renderable {
 }
 
 export interface ITile extends Renderable {
-  // canLand(): boolean;
+  canLand(): boolean;
+  canHitOver(state: State): boolean;
 }
 
 abstract class BaseTile {
@@ -120,11 +121,27 @@ export class WaterTile extends SolidTile implements ITile {
   constructor(pos: Coord) {
     super("water", pos, null, "lightblue", "blue");
   }
+
+  canLand(): boolean {
+    return false;
+  }
+
+  canHitOver(): boolean {
+    return true;
+  }
 }
 
 export class SandTile extends SolidTile implements ITile {
   constructor(pos: Coord, slope: Slope | null) {
     super("sand", pos, slope, "yellow", "orange");
+  }
+
+  canLand(): boolean {
+    return true;
+  }
+
+  canHitOver(): boolean {
+    return true;
   }
 }
 
@@ -132,11 +149,27 @@ export class FairwayTile extends SolidTile implements ITile {
   constructor(pos: Coord, slope: Slope | null) {
     super("fairway", pos, slope, "lime", "gray");
   }
+
+  canLand(): boolean {
+    return true;
+  }
+
+  canHitOver(): boolean {
+    return true;
+  }
 }
 
 export class RoughTile extends SolidTile implements ITile {
   constructor(pos: Coord, slope: Slope | null) {
     super("rough", pos, slope, "white", "lime");
+  }
+
+  canLand(): boolean {
+    return true;
+  }
+
+  canHitOver(): boolean {
+    return true;
   }
 }
 
@@ -186,6 +219,21 @@ export class TreeTile extends BaseTile implements ITile {
       },
       color: "green",
     });
+  }
+
+  canLand(): boolean {
+    return false;
+  }
+
+  canHitOver(state: State): boolean {
+    const {
+      ball,
+      level: { field },
+    } = state;
+
+    const currentTile = field[ball.y][ball.x];
+
+    return currentTile instanceof FairwayTile;
   }
 }
 
