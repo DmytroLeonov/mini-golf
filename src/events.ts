@@ -1,16 +1,14 @@
 import { Current, State } from "./state";
 import { Coord } from "./types";
 
-export type CanvasEvent = (state: State, pos: Coord) => void;
-export type CanvasClickEvent = CanvasEvent;
-export type CanvasHoverEvent = CanvasEvent;
+export type CanvasMouseEventCallback = (state: State, pos: Coord) => void;
 
-type MouseEventType = "click" | "mousemove" | "mouseleave" | "mouseenter";
+export type MouseEventType = "click" | "mousemove" | "mouseleave" | "mouseenter";
 
 export function registerMouseEvent(
   state: State,
   eventType: MouseEventType,
-  e: CanvasClickEvent,
+  cb: CanvasMouseEventCallback,
   when?: Current[]
 ): void {
   state.canvas.addEventListener(eventType, (mouseEvent) => {
@@ -19,7 +17,7 @@ export function registerMouseEvent(
     }
 
     const pos = getTilePositionFromMouseEvent(state, mouseEvent);
-    e(state, pos);
+    cb(state, pos);
   });
 }
 
