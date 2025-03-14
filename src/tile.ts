@@ -116,12 +116,6 @@ abstract class SolidTile extends BaseTile implements Renderable {
   }
 }
 
-abstract class ImageTile extends BaseTile implements Renderable {
-  render(state: State): void {
-    const { ctx } = state;
-  }
-}
-
 export class WaterTile extends SolidTile implements ITile {
   constructor(pos: Coord) {
     super("water", pos, null, "lightblue", "blue");
@@ -146,9 +140,52 @@ export class RoughTile extends SolidTile implements ITile {
   }
 }
 
-export class TreeTile extends SolidTile implements ITile {
+export class TreeTile extends BaseTile implements ITile {
   constructor(pos: Coord) {
-    super("tree", pos, null, "green", "green");
+    super("tree", pos, null);
+  }
+
+  render(state: State): void {
+    const {
+      config: { tileSize },
+      ctx,
+    } = state;
+    const size = tileSize * 0.25;
+
+    const trunkSize = tileSize / 8;
+    const offsetY = trunkSize / 2;
+
+    ctx.fillStyle = "brown";
+    ctx.fillRect(
+      this.pos.x * tileSize + tileSize / 2 - trunkSize / 2,
+      this.pos.y * tileSize + tileSize / 2 + trunkSize / 2 + offsetY,
+      trunkSize,
+      trunkSize
+    );
+
+    renderTriangle(state, this.pos, {
+      v1: { angle: 0, size: size * 0.8 },
+      v2: { angle: (2 * Math.PI) / 3, size: size * 1.1 },
+      v3: { angle: -(2 * Math.PI) / 3, size: size * 1.1 },
+      angle: -Math.PI / 2,
+      offset: {
+        x: 0,
+        y: -tileSize / 5,
+      },
+      color: "green",
+    });
+
+    renderTriangle(state, this.pos, {
+      v1: { angle: 0, size: size * 0.8 },
+      v2: { angle: (2 * Math.PI) / 3, size: size * 1.3 },
+      v3: { angle: -(2 * Math.PI) / 3, size: size * 1.3 },
+      angle: -Math.PI / 2,
+      offset: {
+        x: 0,
+        y: 0,
+      },
+      color: "green",
+    });
   }
 }
 
