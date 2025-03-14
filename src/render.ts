@@ -113,6 +113,16 @@ function renderPossibleMoves(state: State): void {
   }
 }
 
+function renderHoveredTile(state: State): void {
+  const { hoveredTile } = state;
+
+  if (!hoveredTile) {
+    return;
+  }
+
+  renderCircle(state, hoveredTile, { color: "blue", radiusRatio: 0.25 });
+}
+
 export function render(state: State): void {
   const { canvas, ctx } = state;
 
@@ -123,4 +133,5 @@ export function render(state: State): void {
   renderBall(state);
   renderHole(state);
   renderPossibleMoves(state);
+  renderHoveredTile(state);
 }

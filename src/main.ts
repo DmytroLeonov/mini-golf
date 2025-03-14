@@ -10,7 +10,7 @@ import { getGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
 import { render, setText } from "./render";
 import { createGameState, State } from "./state";
-import { createRand, getSeed, mulberry32 } from "./utils";
+import { createRand, getSeed, mulberry32, now, wait } from "./utils";
 
 function setupCanvas(state: State): void {
   const { ctx } = state;
@@ -26,6 +26,24 @@ function resetCanvas(state: State): void {
 
   canvas.width = level.w * tileSize;
   canvas.height = level.h * tileSize;
+}
+
+async function gameLoop(state: State): Promise<void> {
+  const targetFps = 60;
+  const targetMs = 1000 / targetFps;
+  let last = now();
+
+  while (true) {
+    const current = now();
+    const delta = current - last;
+    last = current;
+
+    if (delta < targetMs) {
+      await wait(targetMs - delta);
+    }
+
+    render(state);
+  }
 }
 
 function main(): void {
@@ -47,7 +65,8 @@ function main(): void {
   registerMouseEvent(state, "mousemove", mouseMove);
   registerMouseEvent(state, "click", canvasClick, ["hitting", "rolling"]);
   registerMouseEvent(state, "mouseleave", mouseLeave);
-  render(state);
+
+  gameLoop(state);
 }
 
 main();

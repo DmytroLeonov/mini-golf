@@ -52,7 +52,7 @@ export function mouseEnter(state: State): void {
 
 export function mouseMove(state: State, pos: Coord): void {
   state.hoveredTile = pos;
-  console.log(pos);
+  // console.log(pos);
 }
 
 export function mouseLeave(state: State): void {
