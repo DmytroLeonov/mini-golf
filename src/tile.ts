@@ -1,3 +1,4 @@
+import { renderTriangle } from "./render";
 import { State } from "./state";
 import { Coord } from "./types";
 
@@ -71,26 +72,18 @@ abstract class SolidTile extends BaseTile implements Renderable {
 
     ctx.beginPath();
     const [dy, dx] = this.slope;
-    const xCenter = posXOnCanvas + tileSize / 2 - dx * 3;
-    const yCenter = posYOnCanvas + tileSize / 2 - dy * 3;
-    const angle = Math.atan2(dy, dx);
     const size = tileSize * 0.25;
-
-    ctx.moveTo(
-      xCenter + Math.cos(angle) * size,
-      yCenter + Math.sin(angle) * size
-    );
-    ctx.lineTo(
-      xCenter + Math.cos(angle + (2 * Math.PI) / 3.5) * size,
-      yCenter + Math.sin(angle + (2 * Math.PI) / 3.5) * size
-    );
-    ctx.lineTo(
-      xCenter + Math.cos(angle - (2 * Math.PI) / 3.5) * size,
-      yCenter + Math.sin(angle - (2 * Math.PI) / 3.5) * size
-    );
-    ctx.closePath();
-    ctx.fillStyle = this.fg;
-    ctx.fill();
+    renderTriangle(state, this.pos, {
+      v1: { angle: 0, size },
+      v2: { angle: (2 * Math.PI) / 3.5, size },
+      v3: { angle: -(2 * Math.PI) / 3.5, size },
+      angle: Math.atan2(dy, dx),
+      offset: {
+        x: -dx * 3,
+        y: -dy * 3,
+      },
+      color: this.fg,
+    });
   }
 
   private getTileRadiuses(state: State): number[] {
@@ -120,6 +113,12 @@ abstract class SolidTile extends BaseTile implements Renderable {
     }
 
     return radiuses;
+  }
+}
+
+abstract class ImageTile extends BaseTile implements Renderable {
+  render(state: State): void {
+    const { ctx } = state;
   }
 }
 

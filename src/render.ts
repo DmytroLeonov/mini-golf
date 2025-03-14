@@ -26,6 +26,55 @@ export function setText(state: State): void {
   heightSpan.innerText = h + "";
 }
 
+export type TriangleVertex = {
+  angle: number;
+  size: number;
+};
+
+export type TriangleConfig = {
+  v1: TriangleVertex;
+  v2: TriangleVertex;
+  v3: TriangleVertex;
+  offset?: Coord;
+  color: string;
+  angle?: number;
+};
+
+export function renderTriangle(
+  state: State,
+  pos: Coord,
+  config: TriangleConfig
+): void {
+  const { v1, v2, v3, offset, color, angle = 0 } = config;
+  const {
+    ctx,
+    config: { tileSize },
+  } = state;
+
+  const x = pos.x * tileSize + tileSize / 2 + (offset?.x ?? 0);
+  const y = pos.y * tileSize + tileSize / 2 + (offset?.y ?? 0);
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x + Math.cos(angle + v1.angle) * v1.size,
+    y + Math.sin(angle + v1.angle) * v1.size
+  );
+  ctx.lineTo(
+    x + Math.cos(angle + v2.angle) * v2.size,
+    y + Math.sin(angle + v2.angle) * v2.size
+  );
+  ctx.lineTo(
+    x + Math.cos(angle + v3.angle) * v3.size,
+    y + Math.sin(angle + v3.angle) * v3.size
+  );
+  ctx.closePath();
+  ctx.fillStyle = color;
+
+  ctx.closePath();
+  ctx.fill();
+}
+
 function renderBall(state: State): void {
   const { ball } = state;
 
