@@ -11,14 +11,12 @@ export type State = {
   hoveredTile: Coord | null;
   config: GameConfig;
   level: Level;
-  canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   rand: RandFuncs;
 };
 
 export function createGameState(
   config: GameConfig,
-  canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
   level: Level,
   rand: RandFuncs
@@ -29,7 +27,6 @@ export function createGameState(
     hoveredTile: null,
     config,
     level,
-    canvas,
     ctx,
     rand,
   };

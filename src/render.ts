@@ -131,10 +131,10 @@ function renderHoveredTile(state: State): void {
 }
 
 export function render(state: State): void {
-  const { canvas, ctx } = state;
+  const { ctx } = state;
 
   ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   renderTiles(state);
   renderBall(state);

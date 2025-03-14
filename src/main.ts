@@ -19,13 +19,13 @@ function setupCanvas(state: State): void {
 
 function resetCanvas(state: State): void {
   const {
-    canvas,
+    ctx,
     config: { tileSize },
     level,
   } = state;
 
-  canvas.width = level.w * tileSize;
-  canvas.height = level.h * tileSize;
+  ctx.canvas.width = level.w * tileSize;
+  ctx.canvas.height = level.h * tileSize;
 }
 
 function gameLoop(state: State): void {
@@ -63,7 +63,7 @@ function main(): void {
   assert(!!ctx, "could not get context2d");
   const level = createRandomLevel(randFuncs);
   const config = getGameConfig(seed);
-  const state = createGameState(config, canvas, ctx, level, randFuncs);
+  const state = createGameState(config, ctx, level, randFuncs);
 
   setupCanvas(state);
   resetCanvas(state);

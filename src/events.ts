@@ -3,7 +3,11 @@ import { Coord } from "./types";
 
 export type CanvasMouseEventCallback = (state: State, pos: Coord) => void;
 
-export type MouseEventType = "click" | "mousemove" | "mouseleave" | "mouseenter";
+export type MouseEventType =
+  | "click"
+  | "mousemove"
+  | "mouseleave"
+  | "mouseenter";
 
 export function registerMouseEvent(
   state: State,
@@ -11,7 +15,7 @@ export function registerMouseEvent(
   cb: CanvasMouseEventCallback,
   when?: Current[]
 ): void {
-  state.canvas.addEventListener(eventType, (mouseEvent) => {
+  state.ctx.canvas.addEventListener(eventType, (mouseEvent) => {
     if (when && !when.includes(state.current)) {
       return;
     }
@@ -23,13 +27,13 @@ export function registerMouseEvent(
 
 function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Coord {
   const {
-    canvas,
+    ctx,
     config: { tileSize },
     level: { w, h },
   } = state;
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const rect = ctx.canvas.getBoundingClientRect();
+  const scaleX = ctx.canvas.width / rect.width;
+  const scaleY = ctx.canvas.height / rect.height;
 
   const localX = (e.clientX - rect.left) * scaleX;
   const localY = (e.clientY - rect.top) * scaleY;
@@ -45,7 +49,7 @@ export function canvasClick(state: State, pos: Coord): void {
 }
 
 export function mouseEnter(state: State): void {
-  state.canvas.style.cursor = "pointer";
+  state.ctx.canvas.style.cursor = "pointer";
 }
 
 export function mouseMove(state: State, pos: Coord): void {
@@ -55,5 +59,5 @@ export function mouseMove(state: State, pos: Coord): void {
 
 export function mouseLeave(state: State): void {
   state.hoveredTile = null;
-  state.canvas.style.cursor = "default";
+  state.ctx.canvas.style.cursor = "default";
 }
