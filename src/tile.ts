@@ -6,8 +6,6 @@ import { Vec2 } from "./vec2";
 export const tileTypes = ["fairway", "sand", "rough", "water", "tree"] as const;
 export type TileType = (typeof tileTypes)[number];
 
-export type Slope = [number, number];
-
 export interface Renderable {
   render(state: State): void;
 }
@@ -21,9 +19,9 @@ export interface ITile extends Renderable {
 abstract class BaseTile {
   readonly type: TileType;
   readonly pos: Vec2;
-  readonly slope: Slope | null;
+  readonly slope: Vec2 | null;
 
-  constructor(type: TileType, pos: Vec2, slope: Slope | null) {
+  constructor(type: TileType, pos: Vec2, slope: Vec2 | null) {
     this.type = type;
     this.pos = pos;
     this.slope = slope;
@@ -37,7 +35,7 @@ abstract class SolidTile extends BaseTile implements Renderable {
   constructor(
     type: TileType,
     pos: Vec2,
-    slope: Slope | null,
+    slope: Vec2 | null,
     bg: string,
     fg: string
   ) {
@@ -74,14 +72,13 @@ abstract class SolidTile extends BaseTile implements Renderable {
     }
 
     ctx.beginPath();
-    const [dy, dx] = this.slope;
     const size = tileSize * 0.25;
     renderTriangle(state, this.pos, {
       v1: { angle: 0, size },
       v2: { angle: (2 * Math.PI) / 3.5, size },
       v3: { angle: -(2 * Math.PI) / 3.5, size },
-      angle: Math.atan2(dy, dx),
-      offset: new Vec2(-dx * 3, -dy * 3),
+      angle: Math.atan2(this.slope.y, this.slope.x),
+      offset: new Vec2(-this.slope.x * 3, -this.slope.y * 3),
       color: this.fg,
     });
   }
@@ -135,7 +132,7 @@ export class WaterTile extends SolidTile implements ITile {
 }
 
 export class SandTile extends SolidTile implements ITile {
-  constructor(pos: Vec2, slope: Slope | null) {
+  constructor(pos: Vec2, slope: Vec2 | null) {
     super("sand", pos, slope, "yellow", "orange");
   }
 
@@ -153,7 +150,7 @@ export class SandTile extends SolidTile implements ITile {
 }
 
 export class FairwayTile extends SolidTile implements ITile {
-  constructor(pos: Vec2, slope: Slope | null) {
+  constructor(pos: Vec2, slope: Vec2 | null) {
     super("fairway", pos, slope, "lime", "gray");
   }
 
@@ -171,7 +168,7 @@ export class FairwayTile extends SolidTile implements ITile {
 }
 
 export class RoughTile extends SolidTile implements ITile {
-  constructor(pos: Vec2, slope: Slope | null) {
+  constructor(pos: Vec2, slope: Vec2 | null) {
     super("rough", pos, slope, "white", "lime");
   }
 
@@ -242,7 +239,7 @@ export class TreeTile extends BaseTile implements ITile {
 
     const currentTile = field[ball.y][ball.x];
 
-    return currentTile instanceof FairwayTile;
+    return currentTile.type === "fairway";
   }
 
   getRollModifier(): number {

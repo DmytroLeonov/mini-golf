@@ -1,5 +1,5 @@
 import { assert, never } from "./assert";
-import { State } from "./state";
+import { MoveWithTrail, State } from "./state";
 import { Vec2 } from "./vec2";
 
 type CircleProportionalConfig = {
@@ -121,7 +121,7 @@ function renderCircle(
     never("either supply both strokeColor and strokeRatio or none");
   }
 
-  const center = pos.centerIntTileCopy(tileSize)
+  const center = pos.centerIntTileCopy(tileSize);
 
   ctx.beginPath();
   ctx.arc(
@@ -144,8 +144,8 @@ function renderCircle(
   }
 }
 
-function renderValidMove(state: State, pos: Vec2): void {
-  renderCircle(state, pos, {
+function renderValidMove(state: State, move: MoveWithTrail): void {
+  renderCircle(state, move.pos, {
     radiusRatio: 0.5,
     strokeColor: "rgba(0, 0, 255, .5)",
     strokeRatio: 0.1,

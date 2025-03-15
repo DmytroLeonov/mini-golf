@@ -58,6 +58,10 @@ export class Vec2 {
     return this.x === other.x && this.y === other.y;
   }
 
+  copy(): Vec2 {
+    return new Vec2(this.x, this.y);
+  }
+
   toString(): string {
     return `Vec2(${this.x}, ${this.y})`;
   }

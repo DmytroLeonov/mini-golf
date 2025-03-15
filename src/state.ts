@@ -3,11 +3,16 @@ import { Level } from "./level";
 import { RandFuncs } from "./utils";
 import { Vec2 } from "./vec2";
 
+export type MoveWithTrail = {
+  pos: Vec2;
+  trail: Vec2[];
+};
+
 export type Current = "hitting" | "rolling";
 
 export type State = {
   current: Current;
-  validMoves: Vec2[];
+  validMoves: MoveWithTrail[];
   invalidMoves: Vec2[];
   ball: Vec2;
   roll: number;

@@ -1,5 +1,5 @@
 import { assert } from "./assert";
-import { Current, State } from "./state";
+import { Current, MoveWithTrail, State } from "./state";
 import { Vec2 } from "./vec2";
 
 export type CanvasMouseEventCallback = (state: State, pos: Vec2) => void;
@@ -49,7 +49,7 @@ export function canvasClick(state: State, pos: Vec2): void {
 export function mouseMove(state: State, pos: Vec2): void {
   state.hoveredTile = pos;
   for (const validMove of state.validMoves) {
-    if (pos.equals(validMove)) {
+    if (pos.equals(validMove.pos)) {
       state.ctx.canvas.style.cursor = "pointer";
       return;
     }
@@ -63,25 +63,52 @@ export function mouseLeave(state: State): void {
   state.ctx.canvas.style.cursor = "default";
 }
 
+function calculateTrail(state: State, move: MoveWithTrail): void {
+  const {
+    level: { field },
+  } = state;
+  const { pos, trail } = move;
+
+  let tile = field[pos.y][pos.x];
+  assert(
+    tile.canLand(),
+    "trying to calculate trail for an unlandable tile",
+    "tile",
+    tile,
+    "move",
+    move
+  );
+  assert(move.trail.length === 0, "trail already exists");
+
+  if (!tile.slope) {
+    return;
+  }
+
+  // while (tile.canLand() && tile.slope) {
+  //   const tilePos = tile.slope;
+  //   trail.push(tile.pos.copy());
+  // }
+}
+
 const directions = [
   new Vec2(-1, -1),
-  new Vec2(-1, 0),
-  new Vec2(-1, 1),
-  new Vec2(0, 1),
-  new Vec2(1, 1),
-  new Vec2(1, 0),
-  new Vec2(1, -1),
   new Vec2(0, -1),
+  new Vec2(1, -1),
+  new Vec2(1, 0),
+  new Vec2(1, 1),
+  new Vec2(0, 1),
+  new Vec2(-1, 1),
+  new Vec2(-1, 0),
 ];
 
-export function updateMoves(state: State): void {
+function updateMoves(state: State): void {
   const {
     ball,
     roll,
     level: { field, w, h },
   } = state;
 
-  const validMoves: Vec2[] = [];
+  const validMoves: MoveWithTrail[] = [];
   const invalidMoves: Vec2[] = [];
 
   outer: for (const dir of directions) {
@@ -91,7 +118,11 @@ export function updateMoves(state: State): void {
       continue;
     }
 
-    // TODO: follow slopes
+    if (!field[endPos.y][endPos.x].canLand()) {
+      invalidMoves.push(endPos);
+      continue outer;
+    }
+
     for (let i = 1; i <= roll; i++) {
       const tile = field[ball.y + dir.y * i][ball.x + dir.x * i];
       if (!tile.canHitOver(state)) {
@@ -99,7 +130,12 @@ export function updateMoves(state: State): void {
         continue outer;
       }
     }
-    validMoves.push(endPos);
+    validMoves.push({ pos: endPos, trail: [] });
+  }
+  console.log(validMoves);
+
+  for (const validMove of validMoves) {
+    calculateTrail(state, validMove);
   }
 
   state.validMoves = validMoves;
@@ -108,7 +144,7 @@ export function updateMoves(state: State): void {
 
 export function registerRollEvent(state: State): void {
   const rerollButton = document.querySelector<HTMLSpanElement>("#reroll")!;
-  assert(!!rerollButton, "rerollButton not found");
+  assert(!!rerollButton, "reroll button not found");
 
   rerollButton.addEventListener("click", () => {
     if (state.current !== "rolling") {

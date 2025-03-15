@@ -1,4 +1,4 @@
-import { Slope, TileClass, tileClasses, tileTypes } from "./tile";
+import { TileClass, tileClasses, tileTypes } from "./tile";
 import { RandFuncs } from "./utils";
 import { Vec2 } from "./vec2";
 
@@ -24,13 +24,13 @@ function createRandomField(rand: RandFuncs): Field {
       const randomTileIdx = rand.randRange(0, tileTypes.length);
       const TileClass = tileClasses[randomTileIdx];
 
-      let slope: Slope | null = null;
+      let slope: Vec2 | null = null;
       if (rand.randRange(0, 100) < 10) {
-        const possibleDirs: Slope[] = [
-          [-1, 0],
-          [0, 1],
-          [1, 0],
-          [0, -1],
+        const possibleDirs: Vec2[] = [
+          new Vec2(0, -1),
+          new Vec2(1, 0),
+          new Vec2(0, 1),
+          new Vec2(-1, 0),
         ];
         slope = possibleDirs[rand.randRange(0, possibleDirs.length)];
       }
