@@ -69,25 +69,40 @@ function calculateTrail(state: State, move: MoveWithTrail): void {
   } = state;
   const { pos, trail } = move;
 
-  let tile = field[pos.y][pos.x];
+  let currentTile = field[pos.y][pos.x];
   assert(
-    tile.canLand(),
+    currentTile.canLand(),
     "trying to calculate trail for an unlandable tile",
     "tile",
-    tile,
+    currentTile,
     "move",
     move
   );
   assert(move.trail.length === 0, "trail already exists");
 
-  if (!tile.slope) {
+  if (!currentTile.slope) {
     return;
   }
 
-  // while (tile.canLand() && tile.slope) {
-  //   const tilePos = tile.slope;
-  //   trail.push(tile.pos.copy());
-  // }
+  while (
+    currentTile.canLand() &&
+    !trail.find((p) => p.equals(currentTile.pos))
+  ) {
+    trail.push(currentTile.pos.copy());
+
+    const slope = currentTile.slope;
+    if (!slope) {
+      break;
+    }
+
+    const nextTilePos = currentTile.pos.addCopy(slope);
+    const nextTile = field[nextTilePos.y]?.[nextTilePos.x];
+    if (!nextTile) {
+      break;
+    }
+
+    currentTile = nextTile;
+  }
 }
 
 const directions = [
@@ -132,7 +147,6 @@ function updateMoves(state: State): void {
     }
     validMoves.push({ pos: endPos, trail: [] });
   }
-  console.log(validMoves);
 
   for (const validMove of validMoves) {
     calculateTrail(state, validMove);
