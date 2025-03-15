@@ -50,6 +50,7 @@ export function canvasClick(state: State, pos: Vec2): void {
   if (move) {
     const newPos = move.trail.at(-1) ?? move.pos;
     ball.set(newPos);
+    state.hits++;
     state.validMoves = [];
     state.invalidMoves = [];
   }
@@ -200,6 +201,7 @@ export function registerRollEvent(state: State): void {
 
   function roll() {
     state.roll = state.rand.randRange(1, 7);
+    state.rolls++;
     updateMoves(state);
   }
 
@@ -236,6 +238,8 @@ export function changeLevel(state: State, level: Level): void {
   state.invalidMoves = [];
   state.validMoves = [];
   state.roll = 0;
+  state.rolls = 0;
+  state.hits = 0;
   resetCanvas(state);
 }
 

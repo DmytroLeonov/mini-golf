@@ -9,7 +9,7 @@ import {
 } from "./events";
 import { getGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
-import { render, setText } from "./render";
+import { render } from "./render";
 import { createGameState, State } from "./state";
 import { createRand, getSeed, mulberry32 } from "./utils";
 
@@ -42,8 +42,6 @@ function gameLoop(state: State): void {
 
     const deltaTimeMs = currentTimeMs - previousTimeMs;
     if (deltaTimeMs >= frameIntervalMs) {
-      // update(state);
-
       const offset = deltaTimeMs % frameIntervalMs;
       previousTimeMs = currentTimeMs - offset;
     }
@@ -68,7 +66,6 @@ function main(): void {
 
   setupCanvas(state);
   resetCanvas(state);
-  setText(state);
   registerMouseEvent(state, "mousemove", mouseMove);
   registerMouseEvent(state, "click", canvasClick);
   registerMouseEvent(state, "mouseleave", mouseLeave);

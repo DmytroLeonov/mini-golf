@@ -17,17 +17,26 @@ const heightSpan = document.querySelector<HTMLSpanElement>("#height")!;
 assert(!!heightSpan, "height span not found");
 const rollSpan = document.querySelector<HTMLSpanElement>("#roll")!;
 assert(!!rollSpan, "roll span not found");
+const hitsSpan = document.querySelector<HTMLSpanElement>("#hits")!;
+assert(!!hitsSpan, "hits span not found");
+const rollsSpan = document.querySelector<HTMLSpanElement>("#rolls")!;
+assert(!!rollsSpan, "rolls span not found");
 
-export function setText(state: State): void {
+export function updateText(state: State): void {
   const {
     config: { seed },
     level: { h, w },
     roll,
+    hits,
+    rolls,
   } = state;
+
   seedSpan.innerText = seed + "";
   widthSpan.innerText = w + "";
   heightSpan.innerText = h + "";
   rollSpan.innerText = roll + "";
+  hitsSpan.innerText = hits + "";
+  rollsSpan.innerText = rolls + "";
 }
 
 export type TriangleVertex = {
@@ -235,7 +244,7 @@ function renderHoveredTile(state: State): void {
 export function render(state: State): void {
   const { ctx } = state;
 
-  setText(state);
+  updateText(state);
 
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
