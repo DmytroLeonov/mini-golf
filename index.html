@@ -10,8 +10,7 @@
   <body class="bg-black text-white">
     <div class="h-screen grid place-items-center">
       <section>
-        <canvas id="canvas"></canvas>
-        <div>
+        <div class="flex items-center gap-5 mb-5">
           <p>Seed: <span id="seed">0</span></p>
           <p>Width: <span id="width">0</span></p>
           <p>Height: <span id="height">0</span></p>
@@ -21,6 +20,7 @@
           </div>
           <button id="randomize" class="px-2 py-1 border bor">Randomize</button>
         </div>
+        <canvas id="canvas"></canvas>
       </section>
     </div>
     <script type="module" src="/src/main.ts"></script>

@@ -215,6 +215,12 @@ export function registerRandomizeLevelEvent(state: State): void {
   randomizeButton.addEventListener("click", () => {
     randomizeLevel(state);
   });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "r") {
+      randomizeLevel(state);
+    }
+  });
 }
 
 export function changeLevel(state: State, level: Level): void {
