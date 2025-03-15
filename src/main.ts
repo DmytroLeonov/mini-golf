@@ -70,7 +70,7 @@ function main(): void {
   resetCanvas(state);
   setText(state);
   registerMouseEvent(state, "mousemove", mouseMove);
-  registerMouseEvent(state, "click", canvasClick, ["hitting"]);
+  registerMouseEvent(state, "click", canvasClick);
   registerMouseEvent(state, "mouseleave", mouseLeave);
   registerRollEvent(state);
   registerRandomizeLevelEvent(state);

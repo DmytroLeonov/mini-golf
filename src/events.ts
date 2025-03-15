@@ -1,24 +1,24 @@
 import { assert } from "./assert";
 import { createRandomLevel, Level } from "./level";
 import { resetCanvas } from "./main";
-import { Current, MoveWithTrail, State } from "./state";
+import { MoveWithTrail, State } from "./state";
 import { Vec2 } from "./vec2";
 
 export type CanvasMouseEventCallback = (state: State, pos: Vec2) => void;
 
 export type MouseEventType = "click" | "mousemove" | "mouseleave";
 
+type MovesForPower = {
+  validMoves: MoveWithTrail[];
+  invalidMoves: Vec2[];
+};
+
 export function registerMouseEvent(
   state: State,
   eventType: MouseEventType,
-  cb: CanvasMouseEventCallback,
-  when?: Current[]
+  cb: CanvasMouseEventCallback
 ): void {
   state.ctx.canvas.addEventListener(eventType, (mouseEvent) => {
-    if (when && !when.includes(state.current)) {
-      return;
-    }
-
     const pos = getTilePositionFromMouseEvent(state, mouseEvent);
     cb(state, pos);
   });
@@ -52,7 +52,6 @@ export function canvasClick(state: State, pos: Vec2): void {
     ball.set(newPos);
     state.validMoves = [];
     state.invalidMoves = [];
-    state.current = "rolling";
   }
 }
 
@@ -114,11 +113,6 @@ function calculateTrail(state: State, move: MoveWithTrail): void {
     currentTile = nextTile;
   }
 }
-
-type MovesForPower = {
-  validMoves: MoveWithTrail[];
-  invalidMoves: Vec2[];
-};
 
 const directions = [
   new Vec2(-1, -1),
@@ -204,14 +198,19 @@ export function registerRollEvent(state: State): void {
   const rerollButton = document.querySelector<HTMLSpanElement>("#reroll")!;
   assert(!!rerollButton, "reroll button not found");
 
-  rerollButton.addEventListener("click", () => {
-    if (state.current !== "rolling") {
-      return;
-    }
-
+  function roll() {
     state.roll = state.rand.randRange(1, 7);
-    state.current = "hitting";
     updateMoves(state);
+  }
+
+  rerollButton.addEventListener("click", () => {
+    roll();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "r") {
+      roll();
+    }
   });
 }
 
@@ -225,7 +224,7 @@ export function registerRandomizeLevelEvent(state: State): void {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "r") {
+    if (e.key === "e") {
       randomizeLevel(state);
     }
   });
@@ -234,7 +233,6 @@ export function registerRandomizeLevelEvent(state: State): void {
 export function changeLevel(state: State, level: Level): void {
   state.level = level;
   state.ball = level.tee;
-  state.current = "rolling";
   state.invalidMoves = [];
   state.validMoves = [];
   state.roll = 0;

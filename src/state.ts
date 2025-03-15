@@ -8,10 +8,7 @@ export type MoveWithTrail = {
   trail: Vec2[];
 };
 
-export type Current = "hitting" | "rolling";
-
 export type State = {
-  current: Current;
   validMoves: MoveWithTrail[];
   invalidMoves: Vec2[];
   ball: Vec2;
@@ -30,7 +27,6 @@ export function createGameState(
   rand: RandFuncs
 ): State {
   return {
-    current: "rolling",
     validMoves: [],
     invalidMoves: [],
     ball: level.tee,
