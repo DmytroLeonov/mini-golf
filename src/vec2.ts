@@ -7,6 +7,13 @@ export class Vec2 {
     this.y = y;
   }
 
+  set(other: Vec2): Vec2 {
+    this.x = other.x;
+    this.y = other.y;
+
+    return this;
+  }
+
   add(other: Vec2): Vec2 {
     this.x += other.x;
     this.y += other.y;

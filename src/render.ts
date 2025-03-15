@@ -245,8 +245,8 @@ export function render(state: State): void {
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   renderTiles(state);
-  renderBall(state);
   renderHole(state);
+  renderBall(state);
   renderMoves(state);
   renderHoveredTile(state);
 }

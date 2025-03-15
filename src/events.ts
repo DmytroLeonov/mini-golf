@@ -44,8 +44,16 @@ function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Vec2 {
 }
 
 export function canvasClick(state: State, pos: Vec2): void {
-  console.log(state, pos);
-  state.current = "rolling";
+  const { validMoves, ball } = state;
+
+  const move = validMoves.find((vm) => vm.pos.equals(pos));
+  if (move) {
+    const newPos = move.trail.at(-1) ?? move.pos;
+    ball.set(newPos);
+    state.validMoves = [];
+    state.invalidMoves = [];
+    state.current = "rolling";
+  }
 }
 
 export function mouseMove(state: State, pos: Vec2): void {
