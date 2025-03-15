@@ -1,8 +1,8 @@
 import { assert } from "./assert";
 import { Current, State } from "./state";
-import { Coord } from "./types";
+import { Vec2 } from "./vec2";
 
-export type CanvasMouseEventCallback = (state: State, pos: Coord) => void;
+export type CanvasMouseEventCallback = (state: State, pos: Vec2) => void;
 
 export type MouseEventType = "click" | "mousemove" | "mouseleave";
 
@@ -22,7 +22,7 @@ export function registerMouseEvent(
   });
 }
 
-function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Coord {
+function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Vec2 {
   const {
     ctx,
     config: { tileSize },
@@ -35,21 +35,21 @@ function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Coord {
   const localX = (e.clientX - rect.left) * scaleX;
   const localY = (e.clientY - rect.top) * scaleY;
 
-  const x = Math.max(Math.min(Math.floor(localX / tileSize), w - 1), 0);
-  const y = Math.max(Math.min(Math.floor(localY / tileSize), h - 1), 0);
+  const tileX = Math.max(Math.min(Math.floor(localX / tileSize), w - 1), 0);
+  const tileY = Math.max(Math.min(Math.floor(localY / tileSize), h - 1), 0);
 
-  return { x, y };
+  return new Vec2(tileX, tileY);
 }
 
-export function canvasClick(state: State, pos: Coord): void {
+export function canvasClick(state: State, pos: Vec2): void {
   console.log(state, pos);
   state.current = "rolling";
 }
 
-export function mouseMove(state: State, pos: Coord): void {
+export function mouseMove(state: State, pos: Vec2): void {
   state.hoveredTile = pos;
   for (const validMove of state.validMoves) {
-    if (pos.x === validMove.x && pos.y === validMove.y) {
+    if (pos.equals(validMove)) {
       state.ctx.canvas.style.cursor = "pointer";
       return;
     }
@@ -64,14 +64,14 @@ export function mouseLeave(state: State): void {
 }
 
 const directions = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, 1],
-  [1, 1],
-  [1, 0],
-  [1, -1],
-  [0, -1],
+  new Vec2(-1, -1),
+  new Vec2(-1, 0),
+  new Vec2(-1, 1),
+  new Vec2(0, 1),
+  new Vec2(1, 1),
+  new Vec2(1, 0),
+  new Vec2(1, -1),
+  new Vec2(0, -1),
 ];
 
 export function updateMoves(state: State): void {
@@ -81,14 +81,11 @@ export function updateMoves(state: State): void {
     level: { field, w, h },
   } = state;
 
-  const validMoves: Coord[] = [];
-  const invalidMoves: Coord[] = [];
+  const validMoves: Vec2[] = [];
+  const invalidMoves: Vec2[] = [];
 
-  outer: for (const [x, y] of directions) {
-    const endPos: Coord = {
-      x: ball.x + x * roll,
-      y: ball.y + y * roll,
-    };
+  outer: for (const dir of directions) {
+    const endPos = ball.addComponentsCopy(dir.x * roll, dir.y * roll);
 
     if (endPos.x < 0 || endPos.x >= w || endPos.y < 0 || endPos.y >= h) {
       continue;
@@ -96,7 +93,7 @@ export function updateMoves(state: State): void {
 
     // TODO: follow slopes
     for (let i = 1; i <= roll; i++) {
-      const tile = field[ball.y + y * i][ball.x + x * i];
+      const tile = field[ball.y + dir.y * i][ball.x + dir.x * i];
       if (!tile.canHitOver(state)) {
         invalidMoves.push(endPos);
         continue outer;

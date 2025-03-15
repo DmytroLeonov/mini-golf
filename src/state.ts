@@ -1,17 +1,17 @@
 import { GameConfig } from "./game-config";
 import { Level } from "./level";
-import { Coord } from "./types";
 import { RandFuncs } from "./utils";
+import { Vec2 } from "./vec2";
 
 export type Current = "hitting" | "rolling";
 
 export type State = {
   current: Current;
-  validMoves: Coord[];
-  invalidMoves: Coord[];
-  ball: Coord;
+  validMoves: Vec2[];
+  invalidMoves: Vec2[];
+  ball: Vec2;
   roll: number;
-  hoveredTile: Coord | null;
+  hoveredTile: Vec2 | null;
   config: GameConfig;
   level: Level;
   ctx: CanvasRenderingContext2D;

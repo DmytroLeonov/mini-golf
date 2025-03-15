@@ -45,11 +45,3 @@ export function randRange(rand: Rand) {
     return Math.floor(min + r * (max - min));
   };
 }
-
-// export function now() {
-//   return Date.now();
-// }
-
-// export async function wait(ms: number): Promise<void> {
-//   return new Promise((res) => setTimeout(res, ms));
-// }

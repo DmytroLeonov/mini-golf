@@ -1,12 +1,12 @@
 import { Slope, TileClass, tileClasses, tileTypes } from "./tile";
-import { Coord } from "./types";
 import { RandFuncs } from "./utils";
+import { Vec2 } from "./vec2";
 
 export type Field = TileClass[][];
 
 export type Level = {
-  tee: Coord;
-  hole: Coord;
+  tee: Vec2;
+  hole: Vec2;
   field: Field;
   w: number;
   h: number;
@@ -35,7 +35,7 @@ function createRandomField(rand: RandFuncs): Field {
         slope = possibleDirs[rand.randRange(0, possibleDirs.length)];
       }
 
-      row.push(new TileClass({ x, y }, slope));
+      row.push(new TileClass(new Vec2(x, y), slope));
     }
 
     field.push(row);
@@ -50,8 +50,8 @@ export function createRandomLevel(rand: RandFuncs): Level {
   const h = field.length;
 
   return {
-    tee: { x: 0, y: 0 },
-    hole: { x: w - 1, y: h - 1 },
+    tee: new Vec2(0, 0),
+    hole: new Vec2(w - 1, h - 1),
     field,
     w,
     h,

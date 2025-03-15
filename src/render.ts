@@ -1,6 +1,6 @@
 import { assert, never } from "./assert";
 import { State } from "./state";
-import { Coord } from "./types";
+import { Vec2 } from "./vec2";
 
 type CircleProportionalConfig = {
   color?: string;
@@ -39,14 +39,14 @@ export type TriangleConfig = {
   v1: TriangleVertex;
   v2: TriangleVertex;
   v3: TriangleVertex;
-  offset?: Coord;
+  offset?: Vec2;
   color: string;
   angle?: number;
 };
 
 export function renderTriangle(
   state: State,
-  pos: Coord,
+  pos: Vec2,
   config: TriangleConfig
 ): void {
   const { v1, v2, v3, offset, color, angle = 0 } = config;
@@ -55,22 +55,22 @@ export function renderTriangle(
     config: { tileSize },
   } = state;
 
-  const x = pos.x * tileSize + tileSize / 2 + (offset?.x ?? 0);
-  const y = pos.y * tileSize + tileSize / 2 + (offset?.y ?? 0);
+  const center = pos.centerIntTileCopy(tileSize);
+  offset && center.add(offset);
 
   ctx.beginPath();
 
   ctx.moveTo(
-    x + Math.cos(angle + v1.angle) * v1.size,
-    y + Math.sin(angle + v1.angle) * v1.size
+    center.x + Math.cos(angle + v1.angle) * v1.size,
+    center.y + Math.sin(angle + v1.angle) * v1.size
   );
   ctx.lineTo(
-    x + Math.cos(angle + v2.angle) * v2.size,
-    y + Math.sin(angle + v2.angle) * v2.size
+    center.x + Math.cos(angle + v2.angle) * v2.size,
+    center.y + Math.sin(angle + v2.angle) * v2.size
   );
   ctx.lineTo(
-    x + Math.cos(angle + v3.angle) * v3.size,
-    y + Math.sin(angle + v3.angle) * v3.size
+    center.x + Math.cos(angle + v3.angle) * v3.size,
+    center.y + Math.sin(angle + v3.angle) * v3.size
   );
   ctx.closePath();
   ctx.fillStyle = color;
@@ -108,7 +108,7 @@ function renderTiles(state: State): void {
 
 function renderCircle(
   state: State,
-  pos: Coord,
+  pos: Vec2,
   config: CircleProportionalConfig
 ): void {
   const {
@@ -121,10 +121,12 @@ function renderCircle(
     never("either supply both strokeColor and strokeRatio or none");
   }
 
+  const center = pos.centerIntTileCopy(tileSize)
+
   ctx.beginPath();
   ctx.arc(
-    pos.x * tileSize + tileSize / 2,
-    pos.y * tileSize + tileSize / 2,
+    center.x,
+    center.y,
     tileSize * (radiusRatio - (strokeRatio ?? 0) / 2),
     0,
     2 * Math.PI
@@ -142,7 +144,7 @@ function renderCircle(
   }
 }
 
-function renderValidMove(state: State, pos: Coord): void {
+function renderValidMove(state: State, pos: Vec2): void {
   renderCircle(state, pos, {
     radiusRatio: 0.5,
     strokeColor: "rgba(0, 0, 255, .5)",
@@ -150,7 +152,7 @@ function renderValidMove(state: State, pos: Coord): void {
   });
 }
 
-function renderInvalidMove(state: State, pos: Coord): void {
+function renderInvalidMove(state: State, pos: Vec2): void {
   renderCircle(state, pos, {
     radiusRatio: 0.45,
     color: "rgba(255, 0, 0, .7)",
