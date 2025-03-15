@@ -15,14 +15,14 @@ export type Level = {
 const SLOPE_PERCENTAGE = 10;
 
 function createRandomField(rand: RandFuncs): Field {
-  const w = rand.randRange(10, 30);
-  const h = rand.randRange(10, 30);
+  const w = rand.randRange(10, 25);
+  const h = rand.randRange(10, 20);
 
   const field: Field = [];
 
-  for (let y = 0; y < w; y++) {
+  for (let y = 0; y < h; y++) {
     const row: TileClass[] = [];
-    for (let x = 0; x < h; x++) {
+    for (let x = 0; x < w; x++) {
       const randomTileIdx = rand.randRange(0, tileTypes.length);
       const TileClass = tileClasses[randomTileIdx];
 

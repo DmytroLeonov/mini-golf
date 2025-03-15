@@ -4,6 +4,7 @@ import {
   mouseLeave,
   mouseMove,
   registerMouseEvent,
+  registerRandomizeLevelEvent,
   registerRollEvent,
 } from "./events";
 import { getGameConfig } from "./game-config";
@@ -17,7 +18,7 @@ function setupCanvas(state: State): void {
   ctx.imageSmoothingEnabled = false;
 }
 
-function resetCanvas(state: State): void {
+export function resetCanvas(state: State): void {
   const {
     ctx,
     config: { tileSize },
@@ -72,6 +73,7 @@ function main(): void {
   registerMouseEvent(state, "click", canvasClick, ["hitting"]);
   registerMouseEvent(state, "mouseleave", mouseLeave);
   registerRollEvent(state);
+  registerRandomizeLevelEvent(state);
 
   gameLoop(state);
 }

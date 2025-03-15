@@ -1,4 +1,6 @@
 import { assert } from "./assert";
+import { createRandomLevel, Level } from "./level";
+import { resetCanvas } from "./main";
 import { Current, MoveWithTrail, State } from "./state";
 import { Vec2 } from "./vec2";
 
@@ -163,13 +165,17 @@ function getMovesForPower(state: State, power: number): MovesForPower {
 }
 
 function updateMoves(state: State): void {
-  const { roll, level: {field}, ball } = state;
+  const {
+    roll,
+    level: { field },
+    ball,
+  } = state;
 
   const validMoves: MoveWithTrail[] = [];
   const invalidMoves: Vec2[] = [];
 
   const tile = field[ball.y][ball.x];
-  const power = Math.max(roll + tile.getRollModifier(), 1)
+  const power = Math.max(roll + tile.getRollModifier(), 1);
 
   const actual = getMovesForPower(state, power);
   validMoves.push(...actual.validMoves);
@@ -199,4 +205,30 @@ export function registerRollEvent(state: State): void {
     state.current = "hitting";
     updateMoves(state);
   });
+}
+
+export function registerRandomizeLevelEvent(state: State): void {
+  const randomizeButton =
+    document.querySelector<HTMLSpanElement>("#randomize")!;
+  assert(!!randomizeButton, "randomize button not found");
+
+  randomizeButton.addEventListener("click", () => {
+    randomizeLevel(state);
+  });
+}
+
+export function changeLevel(state: State, level: Level): void {
+  state.level = level;
+  state.ball = level.tee;
+  state.current = "rolling";
+  state.invalidMoves = [];
+  state.validMoves = [];
+  state.roll = 0;
+  resetCanvas(state);
+}
+
+export function randomizeLevel(state: State): void {
+  const { rand } = state;
+  const newLevel = createRandomLevel(rand);
+  changeLevel(state, newLevel);
 }
