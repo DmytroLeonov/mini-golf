@@ -142,7 +142,7 @@ function renderCircle(
   }
 }
 
-function renderPossibleMove(state: State, pos: Coord): void {
+function renderValidMove(state: State, pos: Coord): void {
   renderCircle(state, pos, {
     radiusRatio: 0.5,
     strokeColor: "rgba(0, 0, 255, .5)",
@@ -150,9 +150,9 @@ function renderPossibleMove(state: State, pos: Coord): void {
   });
 }
 
-function renderPossibleMoves(state: State): void {
-  for (const possibleMove of state.possibleMoves) {
-    renderPossibleMove(state, possibleMove);
+function renderMoves(state: State): void {
+  for (const validMove of state.validMoves) {
+    renderValidMove(state, validMove);
   }
 }
 
@@ -181,6 +181,6 @@ export function render(state: State): void {
   renderTiles(state);
   renderBall(state);
   renderHole(state);
-  renderPossibleMoves(state);
+  renderMoves(state);
   renderHoveredTile(state);
 }

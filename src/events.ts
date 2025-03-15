@@ -48,8 +48,8 @@ export function canvasClick(state: State, pos: Coord): void {
 
 export function mouseMove(state: State, pos: Coord): void {
   state.hoveredTile = pos;
-  for (const possibleMove of state.possibleMoves) {
-    if (pos.x === possibleMove.x && pos.y === possibleMove.y) {
+  for (const validMove of state.validMoves) {
+    if (pos.x === validMove.x && pos.y === validMove.y) {
       state.ctx.canvas.style.cursor = "pointer";
       return;
     }
@@ -74,14 +74,15 @@ const directions = [
   [0, -1],
 ];
 
-export function updatePossibleMoves(state: State): void {
+export function updateMoves(state: State): void {
   const {
     ball,
     roll,
     level: { field, w, h },
   } = state;
 
-  const possibleMoves: Coord[] = [];
+  const validMoves: Coord[] = [];
+  // const 
 
   outer: for (const [x, y] of directions) {
     const endPos: Coord = {
@@ -99,10 +100,10 @@ export function updatePossibleMoves(state: State): void {
         continue outer;
       }
     }
-    possibleMoves.push(endPos);
+    validMoves.push(endPos);
   }
 
-  state.possibleMoves = possibleMoves;
+  state.validMoves = validMoves;
 }
 
 export function registerRollEvent(state: State): void {
@@ -116,6 +117,6 @@ export function registerRollEvent(state: State): void {
 
     state.roll = state.rand.randRange(1, 7);
     state.current = "hitting";
-    updatePossibleMoves(state);
+    updateMoves(state);
   });
 }
