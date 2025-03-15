@@ -1,4 +1,4 @@
-import { assert } from "./assert";
+import { assert, never } from "./assert";
 import { State } from "./state";
 import { Coord } from "./types";
 
@@ -118,7 +118,7 @@ function renderCircle(
   const { color, radiusRatio, strokeRatio, strokeColor } = config;
 
   if (!!strokeRatio !== !!strokeColor) {
-    throw new Error("either supply both strokeColor and strokeRatio or none");
+    never("either supply both strokeColor and strokeRatio or none");
   }
 
   ctx.beginPath();

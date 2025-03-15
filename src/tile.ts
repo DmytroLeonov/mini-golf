@@ -1,3 +1,4 @@
+import { never } from "./assert";
 import { renderTriangle } from "./render";
 import { State } from "./state";
 import { Coord } from "./types";
@@ -14,6 +15,7 @@ export interface Renderable {
 export interface ITile extends Renderable {
   canLand(): boolean;
   canHitOver(state: State): boolean;
+  getRollModifier(): number;
 }
 
 abstract class BaseTile {
@@ -129,6 +131,10 @@ export class WaterTile extends SolidTile implements ITile {
   canHitOver(): boolean {
     return true;
   }
+
+  getRollModifier(): number {
+    never("can't land on water");
+  }
 }
 
 export class SandTile extends SolidTile implements ITile {
@@ -142,6 +148,10 @@ export class SandTile extends SolidTile implements ITile {
 
   canHitOver(): boolean {
     return true;
+  }
+
+  getRollModifier(): number {
+    return -1;
   }
 }
 
@@ -157,6 +167,10 @@ export class FairwayTile extends SolidTile implements ITile {
   canHitOver(): boolean {
     return true;
   }
+
+  getRollModifier(): number {
+    return 1;
+  }
 }
 
 export class RoughTile extends SolidTile implements ITile {
@@ -170,6 +184,10 @@ export class RoughTile extends SolidTile implements ITile {
 
   canHitOver(): boolean {
     return true;
+  }
+
+  getRollModifier(): number {
+    return 0;
   }
 }
 
@@ -234,6 +252,10 @@ export class TreeTile extends BaseTile implements ITile {
     const currentTile = field[ball.y][ball.x];
 
     return currentTile instanceof FairwayTile;
+  }
+
+  getRollModifier(): number {
+    never("can't land on trees");
   }
 }
 
