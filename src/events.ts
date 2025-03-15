@@ -105,6 +105,11 @@ function calculateTrail(state: State, move: MoveWithTrail): void {
   }
 }
 
+type MovesForPower = {
+  validMoves: MoveWithTrail[];
+  invalidMoves: Vec2[];
+};
+
 const directions = [
   new Vec2(-1, -1),
   new Vec2(0, -1),
@@ -116,10 +121,9 @@ const directions = [
   new Vec2(-1, 0),
 ];
 
-function updateMoves(state: State): void {
+function getMovesForPower(state: State, power: number): MovesForPower {
   const {
     ball,
-    roll,
     level: { field, w, h },
   } = state;
 
@@ -127,7 +131,7 @@ function updateMoves(state: State): void {
   const invalidMoves: Vec2[] = [];
 
   outer: for (const dir of directions) {
-    const endPos = ball.addComponentsCopy(dir.x * roll, dir.y * roll);
+    const endPos = ball.addComponentsCopy(dir.x * power, dir.y * power);
 
     if (endPos.x < 0 || endPos.x >= w || endPos.y < 0 || endPos.y >= h) {
       continue;
@@ -138,7 +142,7 @@ function updateMoves(state: State): void {
       continue outer;
     }
 
-    for (let i = 1; i <= roll; i++) {
+    for (let i = 1; i <= power; i++) {
       const tile = field[ball.y + dir.y * i][ball.x + dir.x * i];
       if (!tile.canHitOver(state)) {
         invalidMoves.push(endPos);
@@ -150,6 +154,29 @@ function updateMoves(state: State): void {
 
   for (const validMove of validMoves) {
     calculateTrail(state, validMove);
+  }
+
+  return {
+    validMoves,
+    invalidMoves,
+  };
+}
+
+function updateMoves(state: State): void {
+  const { roll } = state;
+
+  const validMoves: MoveWithTrail[] = [];
+  const invalidMoves: Vec2[] = [];
+
+  const actual = getMovesForPower(state, roll);
+  validMoves.push(...actual.validMoves);
+  invalidMoves.push(...actual.invalidMoves);
+
+  if (roll !== 1) {
+    // Can always put
+    const put = getMovesForPower(state, 1);
+    validMoves.push(...put.validMoves);
+    invalidMoves.push(...put.invalidMoves);
   }
 
   state.validMoves = validMoves;
