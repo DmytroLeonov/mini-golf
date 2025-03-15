@@ -210,6 +210,10 @@ function renderInvalidMove(state: State, pos: Vec2): void {
 }
 
 function renderMoves(state: State): void {
+  if (state.current !== "hitting") {
+    return;
+  }
+
   for (const validMove of state.validMoves) {
     renderValidMove(state, validMove);
   }

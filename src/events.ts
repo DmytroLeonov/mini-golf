@@ -163,16 +163,19 @@ function getMovesForPower(state: State, power: number): MovesForPower {
 }
 
 function updateMoves(state: State): void {
-  const { roll } = state;
+  const { roll, level: {field}, ball } = state;
 
   const validMoves: MoveWithTrail[] = [];
   const invalidMoves: Vec2[] = [];
 
-  const actual = getMovesForPower(state, roll);
+  const tile = field[ball.y][ball.x];
+  const power = Math.max(roll + tile.getRollModifier(), 1)
+
+  const actual = getMovesForPower(state, power);
   validMoves.push(...actual.validMoves);
   invalidMoves.push(...actual.invalidMoves);
 
-  if (roll !== 1) {
+  if (power !== 1) {
     // Can always put
     const put = getMovesForPower(state, 1);
     validMoves.push(...put.validMoves);
