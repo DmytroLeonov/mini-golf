@@ -18,6 +18,17 @@ export class Vec2 {
     return new Vec2(this.x + other.x, this.y + other.y);
   }
 
+  subtract(other: Vec2): Vec2 {
+    this.x -= other.x;
+    this.y -= other.y;
+
+    return this;
+  }
+
+  subtractCopy(other: Vec2): Vec2 {
+    return new Vec2(this.x - other.x, this.y - other.y);
+  }
+
   addComponents(x: number, y: number): Vec2 {
     this.x + x;
     this.y + y;

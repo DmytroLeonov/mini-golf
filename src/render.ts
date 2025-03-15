@@ -144,12 +144,62 @@ function renderCircle(
   }
 }
 
+function renderTrail(state: State, move: MoveWithTrail): void {
+  const {
+    ctx,
+    config: { tileSize },
+  } = state;
+  const { trail } = move;
+
+  const color = "blue";
+
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = tileSize * 0.05;
+
+  for (let i = 0; i < trail.length; i++) {
+    const current = trail[i];
+    const next = trail[i + 1];
+
+    if (!next) {
+      const previous = trail[i - 1];
+      if (!previous) {
+        return;
+      }
+
+      const offset = current.subtractCopy(previous);
+      const size = tileSize * 0.2;
+      renderTriangle(state, current, {
+        v1: { angle: 0, size },
+        v2: { angle: (2 * Math.PI) / 3, size },
+        v3: { angle: -(2 * Math.PI) / 3, size },
+        angle: Math.atan2(offset.y, offset.x),
+        offset: offset.multiplyCopy(-tileSize * 0.2),
+        color,
+      });
+      return;
+    }
+    const centeredCurrent = current.centerIntTileCopy(tileSize);
+    const centeredNext = next.centerIntTileCopy(tileSize);
+
+    ctx.moveTo(centeredCurrent.x, centeredCurrent.y);
+    ctx.lineTo(centeredNext.x, centeredNext.y);
+    ctx.stroke();
+  }
+}
+
 function renderValidMove(state: State, move: MoveWithTrail): void {
+  const { hoveredTile } = state;
+
   renderCircle(state, move.pos, {
     radiusRatio: 0.5,
     strokeColor: "rgba(0, 0, 255, .5)",
     strokeRatio: 0.1,
   });
+
+  if (hoveredTile?.equals(move.pos)) {
+    renderTrail(state, move);
+  }
 }
 
 function renderInvalidMove(state: State, pos: Vec2): void {

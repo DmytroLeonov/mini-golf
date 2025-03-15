@@ -71,7 +71,6 @@ abstract class SolidTile extends BaseTile implements Renderable {
       return;
     }
 
-    ctx.beginPath();
     const size = tileSize * 0.25;
     renderTriangle(state, this.pos, {
       v1: { angle: 0, size },

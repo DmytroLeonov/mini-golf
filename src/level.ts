@@ -12,6 +12,8 @@ export type Level = {
   h: number;
 };
 
+const SLOPE_PERCENTAGE = 10;
+
 function createRandomField(rand: RandFuncs): Field {
   const w = rand.randRange(10, 30);
   const h = rand.randRange(10, 30);
@@ -25,7 +27,7 @@ function createRandomField(rand: RandFuncs): Field {
       const TileClass = tileClasses[randomTileIdx];
 
       let slope: Vec2 | null = null;
-      if (rand.randRange(0, 100) < 10) {
+      if (rand.randRange(0, 100) < SLOPE_PERCENTAGE) {
         const possibleDirs: Vec2[] = [
           new Vec2(0, -1),
           new Vec2(1, 0),
@@ -50,7 +52,7 @@ export function createRandomLevel(rand: RandFuncs): Level {
   const h = field.length;
 
   return {
-    tee: new Vec2(0, 0),
+    tee: new Vec2(Math.floor(w / 2) - 1, Math.floor(h / 2)),
     hole: new Vec2(w - 1, h - 1),
     field,
     w,
