@@ -82,7 +82,7 @@ export function updateMoves(state: State): void {
   } = state;
 
   const validMoves: Coord[] = [];
-  // const 
+  const invalidMoves: Coord[] = [];
 
   outer: for (const [x, y] of directions) {
     const endPos: Coord = {
@@ -94,9 +94,11 @@ export function updateMoves(state: State): void {
       continue;
     }
 
+    // TODO: follow slopes
     for (let i = 1; i <= roll; i++) {
       const tile = field[ball.y + y * i][ball.x + x * i];
       if (!tile.canHitOver(state)) {
+        invalidMoves.push(endPos);
         continue outer;
       }
     }
@@ -104,6 +106,7 @@ export function updateMoves(state: State): void {
   }
 
   state.validMoves = validMoves;
+  state.invalidMoves = invalidMoves;
 }
 
 export function registerRollEvent(state: State): void {

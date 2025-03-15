@@ -150,9 +150,19 @@ function renderValidMove(state: State, pos: Coord): void {
   });
 }
 
+function renderInvalidMove(state: State, pos: Coord): void {
+  renderCircle(state, pos, {
+    radiusRatio: 0.45,
+    color: "rgba(255, 0, 0, .7)",
+  });
+}
+
 function renderMoves(state: State): void {
   for (const validMove of state.validMoves) {
     renderValidMove(state, validMove);
+  }
+  for (const invalidMove of state.invalidMoves) {
+    renderInvalidMove(state, invalidMove);
   }
 }
 
