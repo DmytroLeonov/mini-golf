@@ -4,11 +4,7 @@ import { Coord } from "./types";
 
 export type CanvasMouseEventCallback = (state: State, pos: Coord) => void;
 
-export type MouseEventType =
-  | "click"
-  | "mousemove"
-  | "mouseleave"
-  | "mouseenter";
+export type MouseEventType = "click" | "mousemove" | "mouseleave";
 
 export function registerMouseEvent(
   state: State,
@@ -50,12 +46,16 @@ export function canvasClick(state: State, pos: Coord): void {
   state.current = "rolling";
 }
 
-export function mouseEnter(state: State): void {
-  state.ctx.canvas.style.cursor = "pointer";
-}
-
 export function mouseMove(state: State, pos: Coord): void {
   state.hoveredTile = pos;
+  for (const possibleMove of state.possibleMoves) {
+    if (pos.x === possibleMove.x && pos.y === possibleMove.y) {
+      state.ctx.canvas.style.cursor = "pointer";
+      return;
+    }
+  }
+
+  state.ctx.canvas.style.cursor = "default";
 }
 
 export function mouseLeave(state: State): void {

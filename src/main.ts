@@ -1,7 +1,6 @@
 import { assert } from "./assert";
 import {
   canvasClick,
-  mouseEnter,
   mouseLeave,
   mouseMove,
   registerMouseEvent,
@@ -69,9 +68,8 @@ function main(): void {
   setupCanvas(state);
   resetCanvas(state);
   setText(state);
-  registerMouseEvent(state, "mouseenter", mouseEnter);
   registerMouseEvent(state, "mousemove", mouseMove);
-  registerMouseEvent(state, "click", canvasClick, ["hitting", "rolling"]);
+  registerMouseEvent(state, "click", canvasClick, ["hitting"]);
   registerMouseEvent(state, "mouseleave", mouseLeave);
   registerRollEvent(state);
 
