@@ -212,7 +212,7 @@ function renderValidMove(state: State, move: MoveWithTrail): void {
 
 function renderInvalidMove(state: State, pos: Vec2): void {
   renderCircle(state, pos, {
-    radiusRatio: 0.45,
+    radiusRatio: 0.4,
     color: "rgba(255, 0, 0, .7)",
   });
 }
@@ -227,12 +227,27 @@ function renderMoves(state: State): void {
 }
 
 function renderHoveredTile(state: State): void {
-  const { hoveredTile } = state;
+  const { hoveredTile, validMoves, invalidMoves } = state;
 
   if (!hoveredTile) {
     return;
   }
 
+  if (validMoves.find((vm) => vm.pos.equals(hoveredTile))) {
+    renderCircle(state, hoveredTile, {
+      radiusRatio: 0.5,
+      strokeColor: "rgba(0, 0, 255)",
+      strokeRatio: 0.1,
+    });
+    return;
+  } else if (invalidMoves.find((im) => im.equals(hoveredTile))) {
+    renderCircle(state, hoveredTile, {
+      radiusRatio: 0.5,
+      strokeColor: "rgba(255, 0, 0)",
+      strokeRatio: 0.1,
+    });
+    return;
+  }
   renderCircle(state, hoveredTile, {
     radiusRatio: 0.5,
     strokeColor: "rgba(255, 0, 0, .5)",
