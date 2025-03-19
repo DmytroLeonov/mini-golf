@@ -16,7 +16,7 @@ export function getSeed(seed?: number): number {
   return Math.floor(Math.random() * 1000);
 }
 
-export function mulberry32(seed: number) {
+export function mulberry32(seed: number): Rand {
   return function () {
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -39,7 +39,7 @@ export function createRand(rand: Rand): RandFuncs {
   };
 }
 
-export function randRange(rand: Rand) {
+export function randRange(rand: Rand): RandRange {
   return function (min: number, max: number) {
     const r = rand();
     return Math.floor(min + r * (max - min));

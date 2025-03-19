@@ -57,12 +57,13 @@ function main(): void {
   assert(!!canvas, "canvas not found");
   const seed = getSeed(0);
   const rand = mulberry32(seed);
-  const randFuncs = createRand(rand);
+  const seededRandFuncs = createRand(rand);
+  const randFuncs = createRand(Math.random);
   const ctx = canvas.getContext("2d")!;
   assert(!!ctx, "could not get context2d");
-  const level = createRandomLevel(randFuncs);
+  const level = createRandomLevel(seededRandFuncs);
   const config = getGameConfig(seed);
-  const state = createGameState(config, ctx, level, randFuncs);
+  const state = createGameState(config, ctx, level, randFuncs, seededRandFuncs);
 
   setupCanvas(state);
   resetCanvas(state);

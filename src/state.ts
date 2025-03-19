@@ -19,6 +19,7 @@ export type State = {
   config: GameConfig;
   level: Level;
   ctx: CanvasRenderingContext2D;
+  seededRand: RandFuncs;
   rand: RandFuncs;
 };
 
@@ -26,7 +27,8 @@ export function createGameState(
   config: GameConfig,
   ctx: CanvasRenderingContext2D,
   level: Level,
-  rand: RandFuncs
+  rand: RandFuncs,
+  seededRand: RandFuncs
 ): State {
   return {
     validMoves: [],
@@ -39,6 +41,7 @@ export function createGameState(
     config,
     level,
     ctx,
+    seededRand,
     rand,
   };
 }

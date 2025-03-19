@@ -268,7 +268,7 @@ export function changeLevel(state: State, level: Level): void {
 }
 
 export function randomizeLevel(state: State): void {
-  const { rand } = state;
-  const newLevel = createRandomLevel(rand);
+  const { seededRand } = state;
+  const newLevel = createRandomLevel(seededRand);
   changeLevel(state, newLevel);
 }
