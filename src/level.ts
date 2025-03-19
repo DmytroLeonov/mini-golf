@@ -53,7 +53,7 @@ export function createRandomLevel(rand: RandFuncs): Level {
 
   return {
     tee: new Vec2(Math.floor(w / 2) - 1, Math.floor(h / 2)),
-    hole: new Vec2(w - 1, h - 1),
+    hole: new Vec2(w - 5, h - 5),
     field,
     w,
     h,

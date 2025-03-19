@@ -73,6 +73,25 @@ export function mouseLeave(state: State): void {
   state.ctx.canvas.style.cursor = "default";
 }
 
+function tryFallOnOvershoot(state: State, move: MoveWithTrail): boolean {
+  const {
+    ball,
+    level: { hole },
+  } = state;
+  const { pos, trail } = move;
+
+  const diff = pos.subtractCopy(ball);
+  diff.x = Math.sign(diff.x);
+  diff.y = Math.sign(diff.y);
+
+  if (hole.equals(pos.subtractCopy(diff))) {
+    trail.push(pos.copy(), hole.copy());
+    return true;
+  }
+
+  return false;
+}
+
 function calculateTrail(state: State, move: MoveWithTrail): void {
   const {
     level: { field },
@@ -89,6 +108,11 @@ function calculateTrail(state: State, move: MoveWithTrail): void {
     move
   );
   assert(move.trail.length === 0, "trail already exists");
+
+  const fell = tryFallOnOvershoot(state, move);
+  if (fell) {
+    return;
+  }
 
   if (!currentTile.slope) {
     return;

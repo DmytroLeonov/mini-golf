@@ -177,13 +177,12 @@ function renderTrail(state: State, move: MoveWithTrail): void {
       }
 
       const offset = current.subtractCopy(previous);
-      const size = tileSize * 0.2;
+      const size = tileSize * 0.3;
       renderTriangle(state, current, {
-        v1: { angle: 0, size },
-        v2: { angle: (2 * Math.PI) / 3, size },
-        v3: { angle: -(2 * Math.PI) / 3, size },
+        v1: { angle: 0, size: 0 },
+        v2: { angle: (-5 * Math.PI) / 6, size },
+        v3: { angle: (5 * Math.PI) / 6, size },
         angle: Math.atan2(offset.y, offset.x),
-        offset: offset.multiplyCopy(-tileSize * 0.2),
         color,
       });
       return;
