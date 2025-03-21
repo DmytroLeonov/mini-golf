@@ -249,8 +249,8 @@ export class TreeTile extends BaseTile implements ITile {
 export const tileClasses = [
   WaterTile,
   SandTile,
-  FairwayTile,
   RoughTile,
+  FairwayTile,
   TreeTile,
 ] as const;
 export type TileClass = InstanceType<(typeof tileClasses)[number]>;
