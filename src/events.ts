@@ -43,20 +43,43 @@ function getTilePositionFromMouseEvent(state: State, e: MouseEvent): Vec2 {
   return new Vec2(tileX, tileY);
 }
 
+function checkWin(state: State): void {
+  const {
+    ball,
+    level: { hole },
+  } = state;
+
+  const isWin = ball.equals(hole);
+  state.isWin = isWin;
+}
+
 export function canvasClick(state: State, pos: Vec2): void {
-  const { validMoves, ball } = state;
+  const { validMoves, ball, isWin } = state;
+
+  if (isWin) {
+    return;
+  }
 
   const move = validMoves.find((vm) => vm.pos.equals(pos));
-  if (move) {
-    const newPos = move.trail.at(-1) ?? move.pos;
-    ball.set(newPos);
-    state.hits++;
-    state.validMoves = [];
-    state.invalidMoves = [];
+  if (!move) {
+    return;
   }
+
+  const newPos = move.trail.at(-1) ?? move.pos;
+  ball.set(newPos);
+  state.hits++;
+  state.validMoves = [];
+  state.invalidMoves = [];
+  checkWin(state);
 }
 
 export function mouseMove(state: State, pos: Vec2): void {
+  if (state.isWin) {
+    state.hoveredTile = null;
+    state.ctx.canvas.style.cursor = "default";
+    return;
+  }
+
   state.hoveredTile = pos;
   for (const validMove of state.validMoves) {
     if (pos.equals(validMove.pos)) {
@@ -224,6 +247,10 @@ export function registerRollEvent(state: State): void {
   assert(!!rerollButton, "reroll button not found");
 
   function roll() {
+    if (state.isWin) {
+      return;
+    }
+
     state.roll = state.rand.randRange(1, 7);
     state.rolls++;
     updateMoves(state);
@@ -264,6 +291,7 @@ export function changeLevel(state: State, level: Level): void {
   state.roll = 0;
   state.rolls = 0;
   state.hits = 0;
+  state.isWin = false;
   resetCanvas(state);
 }
 

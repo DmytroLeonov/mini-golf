@@ -255,6 +255,17 @@ function renderHoveredTile(state: State): void {
   });
 }
 
+function renderWin(state: State): void {
+  const { ctx, isWin } = state;
+  const { canvas } = ctx;
+
+  if (!isWin) {
+    return;
+  }
+
+  // TODO: render win text
+}
+
 export function render(state: State): void {
   const { ctx } = state;
 
@@ -268,4 +279,5 @@ export function render(state: State): void {
   renderBall(state);
   renderMoves(state);
   renderHoveredTile(state);
+  renderWin(state);
 }

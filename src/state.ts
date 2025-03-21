@@ -16,6 +16,7 @@ export type State = {
   rolls: number;
   hits: number;
   hoveredTile: Vec2 | null;
+  isWin: boolean;
   config: GameConfig;
   level: Level;
   ctx: CanvasRenderingContext2D;
@@ -38,6 +39,7 @@ export function createGameState(
     rolls: 0,
     hits: 0,
     hoveredTile: null,
+    isWin: false,
     config,
     level,
     ctx,
