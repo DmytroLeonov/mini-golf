@@ -7,7 +7,7 @@ import {
   registerRandomizeLevelEvent,
   registerRollEvent,
 } from "./events";
-import { getGameConfig } from "./game-config";
+import { newGameConfig } from "./game-config";
 import { createRandomLevel } from "./level";
 import { render } from "./render";
 import { createGameState, State } from "./state";
@@ -55,14 +55,14 @@ function gameLoop(state: State): void {
 function main(): void {
   const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
   assert(!!canvas, "canvas not found");
-  const seed = getSeed(0);
+  const seed = getSeed(Math.random() * 1000);
   const rand = mulberry32(seed);
   const seededRandFuncs = createRand(rand);
   const randFuncs = createRand(Math.random);
   const ctx = canvas.getContext("2d")!;
   assert(!!ctx, "could not get context2d");
   const level = createRandomLevel(seededRandFuncs);
-  const config = getGameConfig(seed);
+  const config = newGameConfig(seed);
   const state = createGameState(config, ctx, level, randFuncs, seededRandFuncs);
 
   setupCanvas(state);

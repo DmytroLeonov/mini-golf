@@ -4,10 +4,10 @@ export type GameConfig = {
   seed: number;
 };
 
-export function getGameConfig(seed: number): GameConfig {
+export function newGameConfig(seed: number): GameConfig {
   return {
     targetFps: 60,
-    tileSize: 50,
+    tileSize: 30,
     seed,
   };
 }
