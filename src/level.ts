@@ -1,7 +1,17 @@
-import { TileClass, tileClasses } from "./tile";
+import {
+  FairwayTile,
+  RoughTile,
+  SandTile,
+  TileClass,
+  tileClasses,
+  TileType,
+  TreeTile,
+  WaterTile,
+} from "./tile";
 import { RandFuncs } from "./utils";
 import { Vec2 } from "./vec2";
 import { noise } from "./noise";
+import { never } from "./assert";
 
 export type Field = TileClass[][];
 
@@ -13,7 +23,7 @@ export type Level = {
   h: number;
 };
 
-const SLOPE_PERCENTAGE = 10;
+const SLOPE_PERCENTAGE = 100;
 const NOISE_OFFSET = 0.2;
 const MIN_W = 10;
 const MAX_W = 20;
@@ -26,6 +36,18 @@ type Perlin = {
   r: number;
 };
 
+type CumSum = Array<{ tileType: TileType; min: number; max: number }>;
+
+function matchRange(cumSum: CumSum, n: number): TileType {
+  for (const cs of cumSum) {
+    if (cs.min <= n && n <= cs.max) {
+      return cs.tileType;
+    }
+  }
+
+  never(`could not match range for cumSum=${cumSum} and n=${n}`);
+}
+
 function createRandomField(rand: RandFuncs): Field {
   const w = rand.randRange(MIN_W, MAX_W);
   const h = rand.randRange(MIN_H, MAX_H);
@@ -35,26 +57,52 @@ function createRandomField(rand: RandFuncs): Field {
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const r = noise(x * NOISE_OFFSET, y * NOISE_OFFSET);
-      perlin.push({
-        x,
-        y,
-        r: r,
-      });
+      perlin.push({ x, y, r });
     }
   }
 
   perlin.sort((a, b) => a.r - b.r);
 
+  const ratios: Record<TileType, number> = {
+    water: 10,
+    sand: 10,
+    rough: 20,
+    fairway: 30,
+    tree: 20,
+  };
+
+  const classMapping: Record<TileType, (typeof tileClasses)[number]> = {
+    water: WaterTile,
+    sand: SandTile,
+    rough: RoughTile,
+    fairway: FairwayTile,
+    tree: TreeTile,
+  };
+
+  const cumSum: CumSum = (
+    Object.entries(ratios) as [TileType, number][]
+  ).reduce((acc, [tileType, percentage], i) => {
+    if (i === 0) {
+      return [{ tileType, min: 0, max: percentage }];
+    }
+
+    const prevMax = acc.at(-1)!.max;
+    const max = prevMax + percentage;
+
+    return [...acc, { tileType, min: prevMax, max }];
+  }, [] as CumSum);
+
+  const total = cumSum.at(-1)!.max;
+
   const field: Field = new Array(h).fill(0).map(() => []);
   const totalTiles = h * w;
-  const bucketSize = totalTiles / tileClasses.length;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
       const p = perlin[i];
 
-      let tileIndex = Math.floor(i / bucketSize);
-      const TileClass = tileClasses[tileIndex];
+      const tileType = matchRange(cumSum, (i / totalTiles) * total);
+      const TileClass = classMapping[tileType];
 
       let slope: Vec2 | null = null;
       if (rand.randRange(0, 100) < SLOPE_PERCENTAGE) {
